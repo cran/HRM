@@ -1,0 +1,16 @@
+26cc73f480cbf0c6210edc47fb35feea *DESCRIPTION
+2348fcd45bc8d3f1a7e2189ee6c517da *NAMESPACE
+349e4a8f2d5f0b33f1500fc9ddb3bb91 *R/Repeated.R
+dd392c3202342a98294be4b98c68353d *R/example_HAB.R
+c4f0d4087e450e2e2f2de8e77c27718c *R/example_HA_B.R
+45426c7add650fdf705caa7d6874efd1 *R/example_HAu.R
+e827ad41f347263d090259d27d84a9dd *R/example_HAw.R
+2aae6593a8bc5115da5383077f41819e *R/example_HB.R
+5138e5db9e4c892b7386fb61f91d0695 *R/example_all.R
+add9e2ef257a6b863000f7755d6ee3d2 *man/HRM.Rd
+1889d901a1124147ec4d92732a88e5f1 *man/hrm.A.unweighted.Rd
+b3cc9da8729caf5055929ebb9abdcb06 *man/hrm.A.weighted.Rd
+682e2fe05ccc2b1a6e763cb1878c54e8 *man/hrm.AB.Rd
+9840cb33cd0065e093555ad690aa746e *man/hrm.A_B.Rd
+fdd5760d07013f3d86bab3173508665f *man/hrm.B.Rd
+ec86f372cc106fc2bae99cfb76067477 *man/hrm.test.Rd

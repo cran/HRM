@@ -1,0 +1,4 @@
+export(hrm.A.weighted, hrm.A.unweighted, hrm.B, hrm.AB, hrm.A_B, hrm.test) 
+import(matrixcalc)
+import(MASS)
+importFrom("stats", "pf", "qf", "var")
