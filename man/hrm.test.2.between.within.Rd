@@ -5,7 +5,7 @@
 \title{Test for no main effects and interaction effects of two crossed between-subject factors and one within-subject factor}
 \usage{
 hrm.test.2.between.within(X, alpha, group, subgroup, factor1, factor2, subject,
-  data)
+  data, testing = rep(1, 15))
 }
 \arguments{
 \item{X}{list containing the data matrices of all groups}

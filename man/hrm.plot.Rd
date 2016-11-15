@@ -4,19 +4,19 @@
 \alias{hrm.plot}
 \title{Plots profiles of the groups.}
 \usage{
-hrm.plot(X, group, factor1, subject, data, xlab = "dimension",
+hrm.plot(data, group, factor1, subject, response, xlab = "dimension",
   ylab = "means")
 }
 \arguments{
-\item{X}{list containing the data matrices of all groups}
+\item{data}{A data.frame containing the data}
 
-\item{group}{column name of the data frame X specifying the groups}
+\item{group}{column name within the data frame data specifying the groups}
 
-\item{factor1}{column name of the data frame X of the first factor variable}
+\item{factor1}{column name within the data frame data specifying the first subplot-factor}
 
-\item{subject}{column name of the data frame X identifying the subjects}
+\item{subject}{column name within the data frame X identifying the subjects}
 
-\item{data}{column name of the data frame X identifying the measured data}
+\item{response}{column name within the data frame X containing the response variable}
 
 \item{xlab}{label of the x-axis of the plot}
 
@@ -33,7 +33,7 @@ data(EEG)
 head(EEG)
 
 # plots profiles according to groups with
-# subplot factor called 'dimension' in data.frame
+# subplot-factor called dimension
 hrm.plot(EEG,"group", "dimension", "subject", "value")
 }
 

@@ -129,13 +129,14 @@ hrm.A.weighted = function(n, a, d, X, alpha){
   
   # creating dual empirical covariance matrices
   V = lapply(X, DualEmpirical, B = J)
+  
+  
 
   #################################################################################################
   # f = f_1/f_2: numerator degrees of freedom
   f_1 = 0
   f_2 = 0
-  
-  
+
   # computation of f_1
   for(i in 1:a){
     f_1 = f_1 + ((1-n[i]/sum(n))^2)*.E1(n,i,V[[i]])
@@ -145,7 +146,7 @@ hrm.A.weighted = function(n, a, d, X, alpha){
       j=j+1
     }
   }
-  
+
   # computation of f_2
   for(i in 1:a){
     f_2 = f_2 + ((1-n[i]/sum(n)))^2*.E2(n,i,V[[i]])
@@ -157,7 +158,7 @@ hrm.A.weighted = function(n, a, d, X, alpha){
   }
   
   f=f_1/f_2
-  
+
   ##################################################################################################
   
   
@@ -230,12 +231,12 @@ hrm.B = function(n, a, d, X, alpha){
   
   K_B = kronecker(J(a),P(d))
   
-#   V = list(P_d%*%var(X[[1]]),P_d%*%var(X[[2]]))
-#   if(a>2){
-#     for(i in 3:a){
-#       V[[i]] = (P_d%*%var(X[[i]]))
-#     }
-#   }
+  #   V = list(P_d%*%var(X[[1]]),P_d%*%var(X[[2]]))
+  #   if(a>2){
+  #     for(i in 3:a){
+  #       V[[i]] = (P_d%*%var(X[[i]]))
+  #     }
+  #   }
   
   #################################################################################################
   
@@ -336,13 +337,6 @@ hrm.AB = function(n, a, d, X, alpha){
   
   K_AB = kronecker(P(a),P(d))
   
-#   V = list(P_d%*%var(X[[1]]),P_d%*%var(X[[2]]))
-#   if(a>2){
-#     for(i in 3:a){
-#       V[[i]] = (P_d%*%var(X[[i]]))
-#     }
-#   }
-  
   #################################################################################################
   # f
   f_1 = 0
@@ -440,13 +434,6 @@ hrm.A_B = function(n, a, d, X, alpha){
   V = lapply(X, DualEmpirical, B = I)
   
   K_A_B = kronecker(P(a),I(d))
-  
-#   V = list(var(X[[1]]),var(X[[2]]))
-#   if(a>2){
-#     for(i in 3:a){
-#       V[[i]] = (var(X[[i]]))
-#     }
-#   }
   
   #################################################################################################
   # f
@@ -618,24 +605,81 @@ hrm.A.unweighted = function(n, a, d, X, alpha){
 #' @param n an vector containing the sample sizes of all groups
 #' @param a number of groups
 #' @param d number of dimensions (time points)
-#' @param X list containing the data matrices of all groups
+#' @param data A list containing the data matrices of all groups. The rows are the independent subjects, these observations are assumed to be multivariate normally distributed. The columsn of all matrices need to be in the same order.
+#' @param alpha alpha level used for the test
+#' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
+#' @example R/example_1.txt
+#' @keywords internal
+hrm.test = function(n, a, d, data, alpha=0.05){
+  .Deprecated("hrm.test.matrix", package=NULL,
+              old = as.character(sys.call(sys.parent()))[1L])
+  
+  return(hrm.test.matrix(data,alpha))
+}
+
+#' Test for no main treatment effect, no main time effect, no simple treatment effect and no interaction between treatment and time
+#' 
+#' @param data A list containing the data matrices of all groups. The rows are the independent subjects, these observations are assumed to be multivariate normally distributed. The columsn of all matrices need to be in the same order.
 #' @param alpha alpha level used for the test
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @example R/example_1.txt
 #' @export
-hrm.test = function(n, a, d, X, alpha){
+hrm.test.matrix = function(data, alpha=0.05){
   
-  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=1)
+  if(!is.list(data)){
+    stop("data needs to be a list containing the data matrices of all groups")
+  }
   
-  temp0=hrm.A.weighted(n,a,d,X,alpha)
-  temp1 = hrm.A.unweighted(n,a,d,X,alpha)
-  temp2=hrm.B(n,a,d,X,alpha)
-  temp3=hrm.AB(n,a,d,X,alpha)
-  temp4 = hrm.A_B(n,a,d,X,alpha)
+  a = length(data)
+  if(a < 2){
+    stop("At least two groups are needed.")
+  }
+  
+  n = rep(0,a)
+  for(i in 1:a){
+    tmp = data[[i]]
+    if(!is.matrix(tmp)){
+      stop("The elements of data need to be matrices.")
+    }
+    n[i] = dim(tmp)[1]
+  }
+  d = dim(data[[1]])[2]
+  d2 = dim(data[[2]])[2]
+  if(d != d2){
+    stop("The number of measurements for each group need to be the same.")
+  }
+  
+  stopifnot(is.list(data), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=1)
+  
+  temp0=hrm.A.weighted(n,a,d,data,alpha)
+  temp1 = hrm.A.unweighted(n,a,d,data,alpha)
+  temp2=hrm.B(n,a,d,data,alpha)
+  temp3=hrm.AB(n,a,d,data,alpha)
+  temp4 = hrm.A_B(n,a,d,data,alpha)
   output = rbind(temp0,temp1,temp2,temp3,temp4)
   return (output)
 }
 
+#' Test for no main effects and interactino effects of one between-subject factor and one crossed within-subject factors
+#' 
+#' @param X list containing the data matrices of all groups
+#' @param alpha alpha level used for the test
+#' @param group column name of the data frame X specifying the groups
+#' @param factor1 column name of the data frame X of the first factor variable
+#' @param factor2 column name of the data frame X of the second factor variable
+#' @param subject column name of the data frame X identifying the subjects
+#' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
+#' @keywords internal
+hrm.test.2.one = function(X, alpha, group , factor1, subject, data, testing = rep(1,4) ){
+  
+  temp0= if(testing[1]) {hrm.1w.1f(X, alpha, group , factor1,  subject, data, "A", paste(as.character(group), " (weighted)"))}
+  temp1= if(testing[2]) {hrm.1w.1f(X, alpha, group , factor1,  subject, data, "Au", paste(as.character(group)))}
+  temp2= if(testing[3]) {hrm.1w.1f(X, alpha, group , factor1,  subject, data, "B", paste(as.character(factor1)))}
+  temp3= if(testing[4]) {hrm.1w.1f(X, alpha, group , factor1, subject, data, "AB", paste(as.character(group), ":",as.character(factor1)))}
+
+  output = rbind(temp0, temp1, temp2, temp3)
+  return (output)
+}
 
 #' Test for no main effects and interactino effects of one between-subject factor and two crossed within-subject factors
 #' 
@@ -647,17 +691,17 @@ hrm.test = function(n, a, d, X, alpha){
 #' @param subject column name of the data frame X identifying the subjects
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.test.2.within = function(X, alpha, group , factor1, factor2, subject, data ){
+hrm.test.2.within = function(X, alpha, group , factor1, factor2, subject, data, testing = rep(1,7) ){
   
-  temp4= hrm.1w.2f.A(X, alpha, group , factor1, factor2, subject, data )
-  temp5= hrm.1w.2f.B(X, alpha, group , factor1, factor2, subject, data )
-  temp6= hrm.1w.2f.C(X, alpha, group , factor1, factor2, subject, data )
-  temp0= hrm.1w.2f.AB(X, alpha, group , factor1, factor2, subject, data )
-  temp1= hrm.1w.2f.AC(X, alpha, group , factor1, factor2, subject, data )
-  temp2= hrm.1w.2f.BC(X, alpha, group , factor1, factor2, subject, data )
-  temp3= hrm.1w.2f.ABC(X, alpha, group , factor1, factor2, subject, data )
+  temp0= if(testing[1]) {hrm.1w.2f.A(X, alpha, group , factor1, factor2, subject, data )}
+  temp1= if(testing[2]) {hrm.1w.2f.B(X, alpha, group , factor1, factor2, subject, data )}
+  temp2= if(testing[3]) {hrm.1w.2f.C(X, alpha, group , factor1, factor2, subject, data )}
+  temp3= if(testing[4]) {hrm.1w.2f.AB(X, alpha, group , factor1, factor2, subject, data )}
+  temp4= if(testing[5]) {hrm.1w.2f.AC(X, alpha, group , factor1, factor2, subject, data )}
+  temp5= if(testing[6]) {hrm.1w.2f.BC(X, alpha, group , factor1, factor2, subject, data )}
+  temp6= if(testing[7]) {hrm.1w.2f.ABC(X, alpha, group , factor1, factor2, subject, data )}
   
-  output = rbind(temp4, temp5, temp6, temp0,temp1,temp2,temp3)
+  output = rbind(temp0, temp1, temp2, temp3,temp4,temp5,temp6)
   return (output)
 }
 
@@ -674,17 +718,17 @@ hrm.test.2.within = function(X, alpha, group , factor1, factor2, subject, data )
 #' @param data column name of the data frame X containing the measurement data
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.test.2.between = function(X, alpha, group , subgroup, factor, subject, data ){
+hrm.test.2.between = function(X, alpha, group , subgroup, factor, subject, data, testing = rep(1,7) ){
   
-  temp4= hrm.2w.1f.A(X, alpha, group , subgroup, factor, subject, data )
-  temp5= hrm.2w.1f.A2(X, alpha, group , subgroup, factor, subject, data )
-  temp6= hrm.2w.1f.B(X, alpha, group , subgroup, factor, subject, data  )
-  temp0= hrm.2w.1f.AA2(X, alpha, group , subgroup, factor, subject, data  )
-  temp1 =  hrm.2w.1f.AB(X, alpha, group , subgroup, factor, subject, data  )
-  temp2= hrm.2w.1f.A2B(X, alpha, group , subgroup, factor, subject, data  )
-  temp3= hrm.2w.1f.AA2B(X, alpha, group , subgroup, factor, subject, data  )
+  temp1 = if(testing[1]) {hrm.2w.1f.A(X, alpha, group , subgroup, factor, subject, data )}
+  temp2 = if(testing[2]) {hrm.2w.1f.A2(X, alpha, group , subgroup, factor, subject, data )}
+  temp3 = if(testing[3]) {hrm.2w.1f.B(X, alpha, group , subgroup, factor, subject, data  )}
+  temp4 = if(testing[4]) {hrm.2w.1f.AA2(X, alpha, group , subgroup, factor, subject, data  )}
+  temp5 = if(testing[5]) {hrm.2w.1f.AB(X, alpha, group , subgroup, factor, subject, data  )}
+  temp6 = if(testing[6]) {hrm.2w.1f.A2B(X, alpha, group , subgroup, factor, subject, data  )}
+  temp7 = if(testing[7]) {hrm.2w.1f.AA2B(X, alpha, group , subgroup, factor, subject, data  )}
   
-  output = rbind(temp4, temp5, temp6, temp0, temp1, temp2, temp3)
+  output = rbind(temp1, temp2, temp3, temp4, temp5, temp6, temp7)
   return (output)
 }
 
@@ -701,23 +745,22 @@ hrm.test.2.between = function(X, alpha, group , subgroup, factor, subject, data 
 #' @param data column name of the data frame X containing the measurement data
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.test.2.between.within = function(X, alpha, group , subgroup, factor1, factor2, subject, data ){
-  
-  temp0= hrm.2w.2f.A(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp1= hrm.2w.2f.A2(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp2= hrm.2w.2f.B(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp3= hrm.2w.2f.C(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp4= hrm.2w.2f.AA2(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp5= hrm.2w.2f.AB(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp6= hrm.2w.2f.AC(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp7= hrm.2w.2f.A2B(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp8= hrm.2w.2f.A2C(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp9= hrm.2w.2f.BC(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp10= hrm.2w.2f.AA2B(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp11= hrm.2w.2f.AA2C(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp12= hrm.2w.2f.ABC(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp13= hrm.2w.2f.A2BC(X, alpha, group , subgroup, factor1, factor2, subject, data )
-  temp14= hrm.2w.2f.AA2BC(X, alpha, group , subgroup, factor1, factor2, subject, data )
+hrm.test.2.between.within = function(X, alpha, group , subgroup, factor1, factor2, subject, data, testing = rep(1,15) ){
+  temp0= if(testing[1]) {hrm.2w.2f.A(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp1= if(testing[2]) {hrm.2w.2f.A2(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp2= if(testing[3]) {hrm.2w.2f.B(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp3= if(testing[4]) {hrm.2w.2f.C(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp4= if(testing[5]) {hrm.2w.2f.AA2(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp5= if(testing[6]) {hrm.2w.2f.AB(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp6= if(testing[7]) {hrm.2w.2f.AC(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp7= if(testing[8]) {hrm.2w.2f.A2B(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp8= if(testing[9]) {hrm.2w.2f.A2C(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp9= if(testing[10]) {hrm.2w.2f.BC(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp10= if(testing[11]) {hrm.2w.2f.AA2B(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp11= if(testing[12]) {hrm.2w.2f.AA2C(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp12= if(testing[13]) {hrm.2w.2f.ABC(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp13= if(testing[14]) {hrm.2w.2f.A2BC(X, alpha, group , subgroup, factor1, factor2, subject, data )}
+  temp14= if(testing[15]) {hrm.2w.2f.AA2BC(X, alpha, group , subgroup, factor1, factor2, subject, data )}
   
   
   output = rbind(temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, temp11, temp12, temp13, temp14)
@@ -727,18 +770,41 @@ hrm.test.2.between.within = function(X, alpha, group , subgroup, factor1, factor
 
 #' Test for main effects and interaction effects of one or two between-subject factors and one or two within-subject factors
 #' 
-#' @param X list containing the data matrices of all groups
+#' @param X A data.frame containing the data
 #' @param alpha alpha level used for the test
-#' @param group column name of the data frame X specifying the groups
-#' @param subgroup column name of the subgroups (crossed with groups)
-#' @param factor1 column name of the data frame X of within-subject factor
-#' @param factor2 column name of the second within-subject factor crossed with factor1
-#' @param subject column name of the data frame X identifying the subjects
-#' @param data column name of the data frame X containing the measurement data
+#' @param group column name within the data frame data specifying the groups
+#' @param subgroup column name within the data frame data specifying the subgroups (crossed with groups)
+#' @param factor1 column name within the data frame data specifying the first subplot-factor
+#' @param factor2 column name within the data frame data specifying the the second subplot-factor (crossed with factor1)
+#' @param subject column name within the data frame X identifying the subjects
+#' @param data column name within the data frame X containing the response variable
+#' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
+#' @example R/example_2.txt
+#' @keywords internal
+hrm.test.2 = function(X, alpha = 0.05, group , subgroup, factor1, factor2, subject, data ){
+  .Deprecated("hrm.test.dataframe", package=NULL,
+              old = as.character(sys.call(sys.parent()))[1L])
+  return(hrm.test.dataframe(X, alpha, group , subgroup, factor1, factor2, subject, data ))
+}
+
+#' Test for main effects and interaction effects of one or two between-subject factors and one or two within-subject factors
+#' 
+#' @param data A data.frame containing the data
+#' @param alpha alpha level used for the test
+#' @param group column name within the data frame data specifying the groups
+#' @param subgroup column name within the data frame data specifying the subgroups (crossed with groups)
+#' @param factor1 column name within the data frame data specifying the first subplot-factor
+#' @param factor2 column name within the data frame data specifying the the second subplot-factor (crossed with factor1)
+#' @param subject column name within the data frame X identifying the subjects
+#' @param response column name within the data frame X containing the response variable
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @example R/example_2.txt
 #' @export
-hrm.test.2 = function(X, alpha = 0.05, group , subgroup, factor1, factor2, subject, data ){
+hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, factor2, subject, response ){
+  
+  temp = data
+  data = response
+  X = temp
   
   if(missing(group) || !is.character(group)){
     print("At least one between-subject factor is needed!")
@@ -774,15 +840,39 @@ hrm.test.2 = function(X, alpha = 0.05, group , subgroup, factor1, factor2, subje
       stop("alpha level needs to be a number between 0 and 1")
     }
   }
-  
-  
+  dat = X
+  dat = data.frame(dat, subj = X[,subject])
+  s1=subset(dat, dat$subj==dat$subj[1])
+  measurements = dim(s1)[1]
+  countSubplotFactor = nlevels(s1[,factor1])
+  if(!missing(factor2)){
+    countSubplotFactor = countSubplotFactor*nlevels(s1[,factor2])
+  }
+  if(!(measurements == countSubplotFactor)){
+    stop(paste("The number of repeated measurements per subject (", measurements, ") is uneqal to the number of levels of the subplot factors (", countSubplotFactor, ")."))
+  }
   if(missing(factor2) & missing(subgroup)){
-    stop("The model needs at least two between-subject factors or two within-subject factors. Please use otherwise the function hrm.test.")
+    if(!is.factor(X[,group])){
+      stop(paste("The column ", group, " is not a factor." ))
+    }
+    if(!is.factor(X[,factor1])){
+      stop(paste("The column ", factor1, " is not a factor." ))
+    }
+    return(hrm.test.2.one(X, alpha, group , factor1, subject, data ))
   }
   
   if(missing(factor2) & !missing(subgroup)){
     if(!is.character(subgroup)){
       stop("subgroup column name not specified")
+    }
+    if(!is.factor(X[,group])){
+      stop(paste("The column ", group, " is not a factor." ))
+    }
+    if(!is.factor(X[,subgroup])){
+      stop(paste("The column ", subgroup, " is not a factor." ))
+    }
+    if(!is.factor(X[,factor1])){
+      stop(paste("The column ", factor1, " is not a factor." ))
     }
     return(hrm.test.2.between(X, alpha, group , subgroup, factor1, subject, data ))
   }
@@ -790,6 +880,15 @@ hrm.test.2 = function(X, alpha = 0.05, group , subgroup, factor1, factor2, subje
   if(!missing(factor2) & missing(subgroup)){
     if(!is.character(factor2)){
       stop("factor2 column name not specified")
+    }
+    if(!is.factor(X[,group])){
+      stop(paste("The column ", group, " is not a factor." ))
+    }
+    if(!is.factor(X[,factor2])){
+      stop(paste("The column ", factor2, " is not a factor." ))
+    }
+    if(!is.factor(X[,factor1])){
+      stop(paste("The column ", factor1, " is not a factor." ))
     }
     return(hrm.test.2.within(X, alpha, group , factor1, factor2, subject, data ))
   }
@@ -801,7 +900,289 @@ hrm.test.2 = function(X, alpha = 0.05, group , subgroup, factor1, factor2, subje
     if(!is.character(subgroup)){
       stop("subgroup column name not specified")
     }
+    if(!is.factor(X[,group])){
+      stop(paste("The column ", group, " is not a factor." ))
+    }
+    if(!is.factor(X[,subgroup])){
+      stop(paste("The column ", subgroup, " is not a factor." ))
+    }
+    if(!is.factor(X[,factor1])){
+      stop(paste("The column ", factor1, " is not a factor." ))
+    }
+    if(!is.factor(X[,factor])){
+      stop(paste("The column ", factor2, " is not a factor." ))
+    }
     return(hrm.test.2.between.within(X, alpha, group , subgroup, factor1, factor2, subject, data ))
   }
   
+}
+
+
+
+#' Test for main effects and interaction effects of one or two between-subject factors and one or two within-subject factors
+#' 
+#' @param data A data.frame containing the data. The columns containing the factor variables need to have the type 'factor'. One column is needed to indentify the subjects.
+#' @param alpha alpha level used for the test
+#' @param formula A model formula object. The left hand side contains the response variable and the right hand side contains the whole- and subplot factors.
+#' @param subject column name within the data frame X identifying the subjects
+#' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
+#' @example R/example_3.txt
+#' @export
+hrm_test = function(formula, data, alpha = 0.05,  subject ){
+  
+  if(missing(data) || !is.data.frame(data)){
+    stop("dataframe needed")
+  }
+  if(missing(subject) || !is.character(subject)){
+    stop("subject column name not specified")
+  }
+  if(!is.double(alpha)){
+    stop("alpha level needs to be a number between 0 and 1")
+  }
+  if(is.double(alpha)){
+    if(alpha > 1 || alpha < 0){
+      stop("alpha level needs to be a number between 0 and 1")
+    }
+  }
+  dat = model.frame(formula, data)
+  dat2 <- data.frame(dat,subj=data[,subject])
+  m = ncol(dat)
+  
+  if(!is.numeric(dat[,1])){
+    stop("Response variable needs to be numeric!")
+  }
+  
+  
+  
+  # find out, in which columns are the wholeplot or subplot factors
+  s1=subset(dat2, dat2$subj==dat2$subj[1])
+  measurements = dim(s1)[1]
+  countSubplotFactor = 1
+  wholeplot=rep(-1, m)
+  subplot=rep(-1, m)
+  for(i in 2:m){
+    if(!is.factor(dat2[,i])){
+      stop(paste("The column ", colnames(dat2)[i], " is not a factor." ))
+    }
+    if(length(unique(s1[,i]))==nlevels(dat2[,i])){
+      subplot[i]=1
+      countSubplotFactor = countSubplotFactor*nlevels(s1[,i])
+    }
+    else{
+      wholeplot[i]=1
+    }
+  }
+  
+  wholeplot = which(wholeplot==1)
+  subplot = which( subplot==1)
+  if(!(measurements == countSubplotFactor)){
+    stop(paste("The number of repeated measurements per subject (", measurements, ") is uneqal to the number of levels of the subplot factors (", countSubplotFactor, ")."))
+  }
+  if(length(wholeplot)>2 || length(subplot)>2){
+    stop("Too many factors are used! Only two whole- and two subplot-factors are supported.")
+  }
+  
+  if(length(wholeplot)<1 || length(subplot)<1){
+    stop("The model needs at least one between-subject factors and one within-subject factors.")
+  }
+  
+  if(length(wholeplot)==1 & length(subplot)==1){
+    group = colnames(dat2)[wholeplot[1]]
+    factor1 = colnames(dat2)[subplot[1]]
+    x=attributes(terms.formula(formula))$term.labels
+    
+    wholeplot=colnames(dat2[,wholeplot])
+    subplot=colnames(dat2[,subplot])
+    
+    testing = rep(0,4)
+    for(i in 1:length(x)){
+      
+      tmp = strsplit(x[i],":")
+      l = length(tmp[[1]])
+      
+      # interaction hypothesis of 2 factors
+      if(l == 2){testing[4]=1}
+      
+      # l = 1
+      else{
+        if(group == x[i]){
+          testing[1]=1
+          testing[2]=1
+        }
+        else if(factor1 == x[i]){testing[3]=1}
+      }
+    }
+    X=data
+    data = colnames(dat)[1]
+    return(hrm.test.2.one(X, alpha, group , factor1, subject, data, testing ))   
+  }
+  
+  if(length(wholeplot)==2 & length(subplot)==1){
+    group = colnames(dat2)[wholeplot[1]]
+    subgroup = colnames(dat2)[wholeplot[2]]
+    factor1 = colnames(dat2)[subplot[1]]
+    x=attributes(terms.formula(formula))$term.labels
+    
+    wholeplot=colnames(dat2[,wholeplot])
+    subplot=colnames(dat2[,subplot])
+    
+    testing = rep(0,7)
+    for(i in 1:length(x)){
+      
+      tmp = strsplit(x[i],":")
+      l = length(tmp[[1]])
+      
+      # interaction hypothesis of 4 factors
+      if(l == 3){testing[7]=1}
+      
+      # find out which interaction hypothesis of 2 factors is tested
+      else if(l==2){
+        if(grepl(group,x[i])){
+          if(grepl(subgroup,x[i])){
+            testing[4]=1
+          }
+          if(grepl(factor1,x[i])){
+            testing[5]=1
+          }
+        }
+        else if(grepl(subgroup,x[i])){
+          if(grepl(factor1,x[i])){
+            testing[6]=1
+          }
+        }
+      }
+      # l = 1
+      else{
+        if(group == x[i]){testing[1]=1}
+        else if(subgroup == x[i]){testing[2]=1}
+        else if(factor1 == x[i]){testing[3]=1}
+      }
+    }
+    X=data
+    data = colnames(dat)[1]
+    return(hrm.test.2.between(X, alpha, group , subgroup, factor1, subject, data, testing )) 
+  }
+  
+  if(length(wholeplot)==1 & length(subplot)==2){
+    group = colnames(dat2)[wholeplot[1]]
+    factor1 = colnames(dat2)[subplot[1]]
+    factor2 = colnames(dat2)[subplot[2]]
+    x=attributes(terms.formula(formula))$term.labels
+    
+    wholeplot=colnames(dat2[,wholeplot])
+    subplot=colnames(dat2[,subplot])
+    
+    testing = rep(0,7)
+    for(i in 1:length(x)){
+      
+      tmp = strsplit(x[i],":")
+      l = length(tmp[[1]])
+      
+      # interaction hypothesis of 3 factors
+      if(l == 3){testing[7]=1}
+      
+      # find out which interaction hypothesis of 2 factors is tested
+      else if(l==2){
+        if(grepl(group,x[i])){
+          if(grepl(factor1,x[i])){
+            testing[4]=1
+          }
+          if(grepl(factor2,x[i])){
+            testing[5]=1
+          }
+        }
+        else if(grepl(factor1,x[i])){
+          testing[6]=1
+        }
+      }
+      # l = 1
+      else{
+        if(group == x[i]){testing[1]=1}
+        else if(factor1 == x[i]){testing[2]=1}
+        else {testing[3]=1}
+      }
+    }
+    X=data
+    data = colnames(dat)[1]
+    return(hrm.test.2.within(X, alpha, group , factor1, factor2, subject, data, testing ))
+  }
+  
+  if(length(wholeplot)==2 & length(subplot)==2){
+    group = colnames(dat2)[wholeplot[1]]
+    subgroup = colnames(dat2)[wholeplot[2]]
+    factor1 = colnames(dat2)[subplot[1]]
+    factor2 = colnames(dat2)[subplot[2]]
+    x=attributes(terms.formula(formula))$term.labels
+    
+    wholeplot=colnames(dat2[,wholeplot])
+    subplot=colnames(dat2[,subplot])
+    
+    testing = rep(0,15)
+    for(i in 1:length(x)){
+      
+      tmp = strsplit(x[i],":")
+      l = length(tmp[[1]])
+      
+      # interaction hypothesis of 4 factors
+      if(l == 4){testing[15]=1}
+      
+      # find out which interaction hypothesis of 3 factors is tested
+      else if(l==3){
+        if(grepl(group,x[i])){
+          if(grepl(subgroup,x[i])){
+            if(grepl(factor1,x[i])){
+              testing[11]=1
+            }
+            else{
+              testing[12]=1
+            }
+          }
+          else{
+            testing[13]=1
+          }
+        }
+        else{
+          testing[14]=1
+        }
+      }
+      
+      # find out which interaction hypothesis of 2 factors is tested
+      else if(l==2){
+        if(grepl(group,x[i])){
+          if(grepl(subgroup,x[i])){
+            testing[5]=1
+          }
+          if(grepl(factor1,x[i])){
+            testing[6]=1
+          }
+          if(grepl(factor2,x[i])){
+            testing[7]=1
+          }
+        }
+        else if(grepl(subgroup,x[i])){
+          if(grepl(factor1,x[i])){
+            testing[8]=1
+          }
+          if(grepl(factor2,x[i])){
+            testing[9]=1
+          }
+        }
+        else if(grepl(factor1,x[i])){
+          if(grepl(factor2,x[i])){
+            testing[10]=1
+          }
+        }
+      }
+      # l = 1
+      else{
+        if(group == x[i]){testing[1]=1}
+        else if(subgroup == x[i]){testing[2]=1}
+        else if(factor1 == x[i]){testing[3]=1}
+        else {testing[4]=1}
+      }
+    }
+    X=data
+    data = colnames(dat)[1]
+    return(hrm.test.2.between.within(X, alpha, group , subgroup, factor1, factor2, subject, data, testing ))
+  }
 }

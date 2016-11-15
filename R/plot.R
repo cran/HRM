@@ -1,17 +1,18 @@
 #' Plots profiles of the groups.
 #' 
-#' @param X list containing the data matrices of all groups
-#' @param group column name of the data frame X specifying the groups
-#' @param factor1 column name of the data frame X of the first factor variable
-#' @param subject column name of the data frame X identifying the subjects
-#' @param data column name of the data frame X identifying the measured data
+#' @param data A data.frame containing the data
+#' @param group column name within the data frame data specifying the groups
+#' @param factor1 column name within the data frame data specifying the first subplot-factor
+#' @param subject column name within the data frame X identifying the subjects
+#' @param response column name within the data frame X containing the response variable
 #' @param xlab label of the x-axis of the plot
 #' @param ylab label of the y-axis of the plot
 #' @return Plots profiles of the groups.
 #' @example R/example_plot.txt
 #' @export
-hrm.plot = function(X, group , factor1, subject, data, xlab="dimension", ylab="means" ){
-
+hrm.plot = function(data, group , factor1, subject, response, xlab="dimension", ylab="means" ){
+  X=data
+  data=response
   stopifnot(is.data.frame(X),is.character(subject), is.character(group),is.character(factor1),is.character(data),is.character(xlab),is.character(ylab))
   #stopifnot(a == length(X))
   f=0
@@ -50,6 +51,7 @@ hrm.plot = function(X, group , factor1, subject, data, xlab="dimension", ylab="m
   ggplot() +
      geom_line(data=means, aes(x=means$dimension, y=means$value,group=means$group,colour=means$group)) +
      geom_point(data=means, aes(x=means$dimension, y=means$value,group=means$group,colour=means$group),size=1.5) +
+    theme(legend.background = element_rect(),legend.title = element_blank()) +
     xlab(xlab) + ylab(ylab)
 
 }
