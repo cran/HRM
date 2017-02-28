@@ -36,4 +36,4 @@ X=lapply(X, as.matrix)
 # test for the main treatment effect and print the p.value
 hrm.test.matrix(data=X, alpha=0.05)
 }
-
+\keyword{export}

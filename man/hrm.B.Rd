@@ -24,4 +24,3 @@ Returns a data frame consisting of the degrees of freedom, the test value, the c
 Test for no main time effect
 }
 \keyword{internal}
-

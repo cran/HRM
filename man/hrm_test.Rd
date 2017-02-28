@@ -2,7 +2,7 @@
 % Please edit documentation in R/Repeated.R
 \name{hrm_test}
 \alias{hrm_test}
-\title{Test for main effects and interaction effects of one or two between-subject factors and one or two within-subject factors}
+\title{Test for main effects and interaction effects of one or two between-subject factors and one, two or three within-subject factors (at most four factors can be used).}
 \usage{
 hrm_test(formula, data, alpha = 0.05, subject)
 }
@@ -19,7 +19,7 @@ hrm_test(formula, data, alpha = 0.05, subject)
 Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 }
 \description{
-Test for main effects and interaction effects of one or two between-subject factors and one or two within-subject factors
+Test for main effects and interaction effects of one or two between-subject factors and one, two or three within-subject factors (at most four factors can be used).
 }
 \examples{
 data(EEG)
@@ -28,4 +28,4 @@ hrm_test(value ~ group*region+variable+variable:region-group,
            data = EEG, alpha=0.05, subject="subject")
 
 }
-
+\keyword{export}

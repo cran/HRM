@@ -2,7 +2,7 @@
 % Please edit documentation in R/Repeated.R
 \name{hrm.test.dataframe}
 \alias{hrm.test.dataframe}
-\title{Test for main effects and interaction effects of one or two between-subject factors and one or two within-subject factors}
+\title{Test for main effects and interaction effects of one or two between-subject factors and one, two or three within-subject factors (at most four factors can be used).}
 \usage{
 hrm.test.dataframe(data, alpha = 0.05, group, subgroup, factor1, factor2,
   subject, response)
@@ -28,7 +28,7 @@ hrm.test.dataframe(data, alpha = 0.05, group, subgroup, factor1, factor2,
 Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 }
 \description{
-Test for main effects and interaction effects of one or two between-subject factors and one or two within-subject factors
+Test for main effects and interaction effects of one or two between-subject factors and one, two or three within-subject factors (at most four factors can be used).
 }
 \examples{
 n=c(45, 22, 57, 36)
@@ -61,4 +61,4 @@ X$group = as.factor(X$group)
 hrm.test.dataframe(data=X,alpha=0.05,group="group",factor1="variable",
 factor2="region",subject="subject",response="value")
 }
-
+\keyword{export}

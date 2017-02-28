@@ -26,4 +26,3 @@ Returns a data frame consisting of the degrees of freedom, the test value, the c
 Test for influence of factor B
 }
 \keyword{internal}
-

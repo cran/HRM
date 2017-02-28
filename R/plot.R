@@ -9,7 +9,7 @@
 #' @param ylab label of the y-axis of the plot
 #' @return Plots profiles of the groups.
 #' @example R/example_plot.txt
-#' @export
+#' @keywords export
 hrm.plot = function(data, group , factor1, subject, response, xlab="dimension", ylab="means" ){
   X=data
   data=response

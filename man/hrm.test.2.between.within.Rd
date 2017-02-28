@@ -31,4 +31,3 @@ Returns a data frame consisting of the degrees of freedom, the test value, the c
 Test for no main effects and interaction effects of two crossed between-subject factors and one within-subject factor
 }
 \keyword{internal}
-

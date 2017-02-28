@@ -36,4 +36,4 @@ head(EEG)
 # subplot-factor called dimension
 hrm.plot(EEG,"group", "dimension", "subject", "value")
 }
-
+\keyword{export}

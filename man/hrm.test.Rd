@@ -43,4 +43,3 @@ X=lapply(X, as.matrix)
 hrm.test.matrix(data=X, alpha=0.05)
 }
 \keyword{internal}
-

@@ -24,4 +24,3 @@ Returns a data frame consisting of the degrees of freedom, the test value, the c
 Test for no main treatment effect (weighted version)
 }
 \keyword{internal}
-

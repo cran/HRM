@@ -5,7 +5,7 @@
 Inference on low- and high-dimensional multi-group reapeted-measures designs with unequal covariance matrices.
 }
 \description{
-Tests for main and simple treatment effects, time effects, as well as treatment by time interactions in possibly high-dimensional multi-group repeated measures designs.
+Tests for main and simple treatment effects, time effects, as well as treatment by time interactions in possibly high-dimensional multi-group repeated measures designs. The groups are allowed to have different variance-covariance matrices but the observations must follow a multivariate normal distribution.
 }
 \details{
 \tabular{ll}{

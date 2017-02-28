@@ -26,4 +26,3 @@ Returns a data frame consisting of the degrees of freedom, the test value, the c
 Test for interaction of factor B and C
 }
 \keyword{internal}
-

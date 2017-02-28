@@ -62,7 +62,6 @@
 #' Function for the output: significant p-values have on or more stars
 #' 
 #' @param value p-value
-#' @export
 #' @keywords internal
 .hrm.sigcode = function(value) {
   
@@ -623,7 +622,7 @@ hrm.test = function(n, a, d, data, alpha=0.05){
 #' @param alpha alpha level used for the test
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @example R/example_1.txt
-#' @export
+#' @keywords export
 hrm.test.matrix = function(data, alpha=0.05){
   
   if(!is.list(data)){
@@ -768,6 +767,41 @@ hrm.test.2.between.within = function(X, alpha, group , subgroup, factor1, factor
 }
 
 
+#' Test for no main effects and interaction effects of two crossed between-subject factors and one within-subject factor
+#' 
+#' @param X list containing the data matrices of all groups
+#' @param alpha alpha level used for the test
+#' @param group column name of the data frame X specifying the groups
+#' @param factor1 column name of the data frame X of the first within-subject factor
+#' @param factor2 column name of the data frame X of the second within-subject factor
+#' @param factor3 column name of the data frame X of the third within-subject factor
+#' @param subject column name of the data frame X identifying the subjects
+#' @param data column name of the data frame X containing the measurement data
+#' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
+#' @keywords internal
+hrm.test.3.between = function(X, alpha, group , factor1, factor2, factor3, subject, data, testing = rep(1,15) ){
+  temp0= if(testing[1]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3, subject, data, P, J, J, J,  paste(as.character(group) ) )}
+  temp1= if(testing[2]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, J, P, J, J, paste(as.character(factor1)) )}
+  temp2= if(testing[3]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, J, J, P, J, paste(as.character(factor2)) )}
+  temp3= if(testing[4]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, J, J, J, P, paste(as.character(factor3)) )}
+  temp4= if(testing[5]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, P, P, J, J, paste(as.character(group),":",as.character(factor1)) )} 
+  temp5= if(testing[6]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, P, J, P, J, paste(as.character(group),":",as.character(factor2)) )}
+  temp6= if(testing[7]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, P, J, J, P, paste(as.character(group),":",as.character(factor3)) )}
+  temp7= if(testing[8]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, J, P, P, J, paste(as.character(factor1),":",as.character(factor2)) )}
+  temp8= if(testing[9]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, J, P, J, P, paste(as.character(factor1),":",as.character(factor3)) )}
+  temp9= if(testing[10]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, J, J, P, P,paste(as.character(factor2),":",as.character(factor3)) )}
+  temp10= if(testing[11]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, P, P, P, J, paste(as.character(group),":",as.character(factor1), ":", as.character(factor2)) )}
+  temp11= if(testing[12]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, P, P, J, P, paste(as.character(group),":",as.character(factor1), ":", as.character(factor3)) )}
+  temp12= if(testing[13]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, P, J, P, P, paste(as.character(group),":",as.character(factor2), ":", as.character(factor3)) )}
+  temp13= if(testing[14]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, J, P, P, P, paste(as.character(factor1),":",as.character(factor2), ":", as.character(factor3)) )}
+  temp14= if(testing[15]) {hrm.1w.3f(X, alpha, group, factor1, factor2, factor3,  subject, data, P, P, P, P, paste(as.character(group),":",as.character(factor1), ":", as.character(factor2), ":", as.character(factor3)) )}
+  
+  
+  output = rbind(temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, temp9, temp10, temp11, temp12, temp13, temp14)
+  return (output)
+}
+
+
 #' Test for main effects and interaction effects of one or two between-subject factors and one or two within-subject factors
 #' 
 #' @param X A data.frame containing the data
@@ -787,7 +821,7 @@ hrm.test.2 = function(X, alpha = 0.05, group , subgroup, factor1, factor2, subje
   return(hrm.test.dataframe(X, alpha, group , subgroup, factor1, factor2, subject, data ))
 }
 
-#' Test for main effects and interaction effects of one or two between-subject factors and one or two within-subject factors
+#' Test for main effects and interaction effects of one or two between-subject factors and one, two or three within-subject factors (at most four factors can be used).
 #' 
 #' @param data A data.frame containing the data
 #' @param alpha alpha level used for the test
@@ -799,7 +833,7 @@ hrm.test.2 = function(X, alpha = 0.05, group , subgroup, factor1, factor2, subje
 #' @param response column name within the data frame X containing the response variable
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @example R/example_2.txt
-#' @export
+#' @keywords export
 hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, factor2, subject, response ){
   
   temp = data
@@ -909,7 +943,7 @@ hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, fac
     if(!is.factor(X[,factor1])){
       stop(paste("The column ", factor1, " is not a factor." ))
     }
-    if(!is.factor(X[,factor])){
+    if(!is.factor(X[,factor2])){
       stop(paste("The column ", factor2, " is not a factor." ))
     }
     return(hrm.test.2.between.within(X, alpha, group , subgroup, factor1, factor2, subject, data ))
@@ -919,7 +953,7 @@ hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, fac
 
 
 
-#' Test for main effects and interaction effects of one or two between-subject factors and one or two within-subject factors
+#' Test for main effects and interaction effects of one or two between-subject factors and one, two or three within-subject factors (at most four factors can be used).
 #' 
 #' @param data A data.frame containing the data. The columns containing the factor variables need to have the type 'factor'. One column is needed to indentify the subjects.
 #' @param alpha alpha level used for the test
@@ -927,7 +961,7 @@ hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, fac
 #' @param subject column name within the data frame X identifying the subjects
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @example R/example_3.txt
-#' @export
+#' @keywords export
 hrm_test = function(formula, data, alpha = 0.05,  subject ){
   
   if(missing(data) || !is.data.frame(data)){
@@ -978,10 +1012,15 @@ hrm_test = function(formula, data, alpha = 0.05,  subject ){
   if(!(measurements == countSubplotFactor)){
     stop(paste("The number of repeated measurements per subject (", measurements, ") is uneqal to the number of levels of the subplot factors (", countSubplotFactor, ")."))
   }
-  if(length(wholeplot)>2 || length(subplot)>2){
-    stop("Too many factors are used! Only two whole- and two subplot-factors are supported.")
+  if(length(wholeplot)>2){
+    stop("Too many factors are used! Only two wholelot-factors are supported.")
   }
-  
+  if(length(subplot)>3){
+    stop("Too many factors are used! Only three subplotlot-factors are supported.")
+  }
+  if(length(wholeplot)>1 & length(subplot)==3){
+    stop("Too many factors are used! Only one whole- and three subplot-factors are supported.")
+  }
   if(length(wholeplot)<1 || length(subplot)<1){
     stop("The model needs at least one between-subject factors and one within-subject factors.")
   }
@@ -1106,6 +1145,96 @@ hrm_test = function(formula, data, alpha = 0.05,  subject ){
     data = colnames(dat)[1]
     return(hrm.test.2.within(X, alpha, group , factor1, factor2, subject, data, testing ))
   }
+  
+  if(length(wholeplot)==1 & length(subplot)==3){
+    group = colnames(dat2)[wholeplot[1]]
+    factor1 = colnames(dat2)[subplot[1]]
+    factor2 = colnames(dat2)[subplot[2]]
+    factor3 = colnames(dat2)[subplot[3]]
+    
+    x=attributes(terms.formula(formula))$term.labels
+    
+    wholeplot=colnames(dat2[,wholeplot])
+    subplot=colnames(dat2[,subplot])
+    
+    testing = rep(0,15)
+    for(i in 1:length(x)){
+      
+      tmp = strsplit(x[i],":")
+      l = length(tmp[[1]])
+      
+      # interaction hypothesis of 3 factors
+      if(l == 4){testing[15]=1}
+      
+      # find out which interaction hypothesis of 3 factors is tested
+      else if(l==3){
+        if(grepl(group,x[i])){
+          if(grepl(factor1,x[i])){
+            if(grepl(factor2,x[i])){
+              testing[11]=1
+            }
+            else{
+              testing[12]=1
+            }
+          }
+          if(grepl(factor2,x[i])){
+            if(grepl(factor3,x[i])){
+              testing[13]=1
+            }
+          }
+        }
+        else if(grepl(factor1,x[i])){
+          testing[14]=1
+        }
+      }
+      # l = 2
+      else if (l==2){
+        if(grepl(group,x[i])){
+          if(grepl(factor1,x[i])){
+            testing[5]=1
+          }
+          if(grepl(factor2,x[i])){
+            testing[6]=1
+          }
+          if(grepl(factor3,x[i])){
+            testing[7]=1
+          }
+        }
+        else if(grepl(factor1,x[i])){
+          if(grepl(factor2,x[i])){
+            testing[8]=1
+          }
+          if(grepl(factor3,x[i])){
+            testing[9]=1
+          }
+        }
+        else if(grepl(factor2,x[i])){
+          if(grepl(factor3,x[i])){
+            testing[10]=1
+          }
+        }
+      }
+      else if(l==1){
+        if(grepl(group, x[[i]])){
+          testing[1]=1
+        }
+        if(grepl(factor1, x[[i]])){
+          testing[2]=1
+        }
+        if(grepl(factor2, x[[i]])){
+          testing[3]=1
+        }
+        if(grepl(factor3, x[[i]])){
+          testing[4]=1
+        }
+      }
+    }
+    X=data
+    data = colnames(dat)[1]
+    return(hrm.test.3.between(X, alpha, group , factor1, factor2, factor3, subject, data, testing ))
+  }
+  
+  
   
   if(length(wholeplot)==2 & length(subplot)==2){
     group = colnames(dat2)[wholeplot[1]]

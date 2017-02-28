@@ -61,4 +61,3 @@ hrm.test.dataframe(data=X,alpha=0.05,group="group",factor1="variable",
 factor2="region",subject="subject",response="value")
 }
 \keyword{internal}
-
