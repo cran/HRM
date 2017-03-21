@@ -828,13 +828,14 @@ hrm.test.2 = function(X, alpha = 0.05, group , subgroup, factor1, factor2, subje
 #' @param group column name within the data frame data specifying the groups
 #' @param subgroup column name within the data frame data specifying the subgroups (crossed with groups)
 #' @param factor1 column name within the data frame data specifying the first subplot-factor
-#' @param factor2 column name within the data frame data specifying the the second subplot-factor (crossed with factor1)
+#' @param factor2 column name within the data frame data specifying the the second subplot-factor
+#' @param factor3 column name within the data frame data specifying the the third subplot-factor
 #' @param subject column name within the data frame X identifying the subjects
 #' @param response column name within the data frame X containing the response variable
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @example R/example_2.txt
 #' @keywords export
-hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, factor2, subject, response ){
+hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, factor2, factor3, subject, response ){
   
   temp = data
   data = response
@@ -848,6 +849,10 @@ hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, fac
   if(missing(factor1) || !is.character(factor1)){
     print("At least one between-subject factor is needed!")
     stop("factor1 column name not specified ")
+  }
+  
+  if(!missing(factor1) & !missing(factor2) & !missing(factor3) & !missing(group)  & !missing(subgroup)  ){
+    stop("The maximum number of factors that can be used is four.")
   }
   
   if(missing(X) || !is.data.frame(X)){
@@ -882,10 +887,13 @@ hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, fac
   if(!missing(factor2)){
     countSubplotFactor = countSubplotFactor*nlevels(s1[,factor2])
   }
+  if(!missing(factor3)){
+    countSubplotFactor = countSubplotFactor*nlevels(s1[,factor3])
+  }
   if(!(measurements == countSubplotFactor)){
     stop(paste("The number of repeated measurements per subject (", measurements, ") is uneqal to the number of levels of the subplot factors (", countSubplotFactor, ")."))
   }
-  if(missing(factor2) & missing(subgroup)){
+  if(missing(factor2) & missing(subgroup) & missing(factor3)){
     if(!is.factor(X[,group])){
       stop(paste("The column ", group, " is not a factor." ))
     }
@@ -895,7 +903,7 @@ hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, fac
     return(hrm.test.2.one(X, alpha, group , factor1, subject, data ))
   }
   
-  if(missing(factor2) & !missing(subgroup)){
+  if(missing(factor2) & !missing(subgroup) & missing(factor3)){
     if(!is.character(subgroup)){
       stop("subgroup column name not specified")
     }
@@ -911,7 +919,7 @@ hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, fac
     return(hrm.test.2.between(X, alpha, group , subgroup, factor1, subject, data ))
   }
   
-  if(!missing(factor2) & missing(subgroup)){
+  if(!missing(factor2) & missing(subgroup) & missing(factor3)){
     if(!is.character(factor2)){
       stop("factor2 column name not specified")
     }
@@ -927,7 +935,7 @@ hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, fac
     return(hrm.test.2.within(X, alpha, group , factor1, factor2, subject, data ))
   }
   
-  if(!missing(factor2) & !missing(subgroup)){
+  if(!missing(factor2) & !missing(subgroup) & missing(factor3)){
     if(!is.character(factor2)){
       stop("factor2 column name not specified")
     }
@@ -947,6 +955,36 @@ hrm.test.dataframe = function(data, alpha = 0.05, group , subgroup, factor1, fac
       stop(paste("The column ", factor2, " is not a factor." ))
     }
     return(hrm.test.2.between.within(X, alpha, group , subgroup, factor1, factor2, subject, data ))
+  }
+  if(!missing(factor1) & !missing(factor2) & !missing(factor3) & !missing(group)  & missing(subgroup)  ){
+    if(!is.character(factor1)){
+      stop("factor1 column name not specified")
+    }
+    if(!is.character(factor2)){
+      stop("factor2 column name not specified")
+    }
+    if(!is.character(factor3)){
+      stop("factor3 column name not specified")
+    }
+    if(!is.character(group)){
+      stop("group column name not specified")
+    }
+    if(!is.factor(X[,group])){
+      stop(paste("The column ", group, " is not a factor." ))
+    }
+    if(!is.factor(X[,factor1])){
+      stop(paste("The column ", factor1, " is not a factor." ))
+    }
+    if(!is.factor(X[,factor2])){
+      stop(paste("The column ", factor2, " is not a factor." ))
+    }
+    if(!is.factor(X[,factor3])){
+      stop(paste("The column ", factor3, " is not a factor." ))
+    }
+    formula = as.formula(paste(data, "~", group, "*", factor1, "*", factor2, "*", factor3))
+    print(formula)
+    return(hrm_test(formula=formula,alpha=alpha,subject=subject, data=X ))
+    
   }
   
 }

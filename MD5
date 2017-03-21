@@ -1,6 +1,6 @@
-f5dec58797544567476d0adc033ee865 *DESCRIPTION
-77d292f92be7c6842d6fd6a024ab634d *NAMESPACE
-f5522f4e497b5297c9867345f6b79f26 *R/Repeated.R
+fc070a6c893530f18ac52a2add06447c *DESCRIPTION
+cb24113e37fd762a44e5df1a9a093a63 *NAMESPACE
+a424dd34f249d3fd506667e272858f4e *R/Repeated.R
 595fa844955c66a63db79b71f2a73a18 *R/f2.R
 7c66b649fcad0f03a73e0a79e450019e *R/f3.R
 ad705423a5397e9b0e2ddc899fdc3cb8 *R/f3_A.R
@@ -34,8 +34,9 @@ c09b9e8e5ab2bcb6b05e3137e4d9194a *R/f4_AC.R
 58b4c193a73d06ed43436ffd5029789c *R/f4_C.R
 7876ea13f37efe9dd25e81367e16b30d *R/plot.R
 715755f2b725e181c944c7a54b00ee0d *data/EEG.rda
+dac0d84377f1b63faadfc3a1fd301f43 *inst/CITATION
 1a60e33c7c29016a9438cca32b30d788 *man/EEG.Rd
-bddac7f1d1a2854b736b01c5f20dbb45 *man/HRM.Rd
+529e55a81dc239deedad73ca7cd2bd7a *man/HRM.Rd
 42ede2b68f55efab292ed949760fe9d2 *man/hrm.1w.1f.Rd
 2adcda3c902b6ff18f6d4956fa05cb18 *man/hrm.1w.2f.A.Rd
 e21d76fb1d4f4d1263a1fd64fdc69c08 *man/hrm.1w.2f.AB.Rd
@@ -80,6 +81,6 @@ fd010ba2a49b04167c71ecc90073319f *man/hrm.test.2.between.within.Rd
 9d089516098af53de46f9319c11eb033 *man/hrm.test.2.within.Rd
 c7491b6845a5007919b5ec0e08b27d74 *man/hrm.test.3.between.Rd
 3c709ca9a2898bd26a8672ca994b2a1e *man/hrm.test.Rd
-f6343cebbd897a56815e1e437cace565 *man/hrm.test.dataframe.Rd
+efc82a2f71039de9f1e395210a2115a4 *man/hrm.test.dataframe.Rd
 2996354b5964fb06bdf4ad88f597f0b0 *man/hrm.test.matrix.Rd
 0b6f882b86f87362d05177dca3ecfad7 *man/hrm_test.Rd

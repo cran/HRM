@@ -5,7 +5,7 @@
 \title{Test for main effects and interaction effects of one or two between-subject factors and one, two or three within-subject factors (at most four factors can be used).}
 \usage{
 hrm.test.dataframe(data, alpha = 0.05, group, subgroup, factor1, factor2,
-  subject, response)
+  factor3, subject, response)
 }
 \arguments{
 \item{data}{A data.frame containing the data}
@@ -18,7 +18,9 @@ hrm.test.dataframe(data, alpha = 0.05, group, subgroup, factor1, factor2,
 
 \item{factor1}{column name within the data frame data specifying the first subplot-factor}
 
-\item{factor2}{column name within the data frame data specifying the the second subplot-factor (crossed with factor1)}
+\item{factor2}{column name within the data frame data specifying the the second subplot-factor}
+
+\item{factor3}{column name within the data frame data specifying the the third subplot-factor}
 
 \item{subject}{column name within the data frame X identifying the subjects}
 
