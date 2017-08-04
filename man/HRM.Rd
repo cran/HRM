@@ -11,8 +11,8 @@ Tests for main and simple treatment effects, time effects, as well as treatment 
 \tabular{ll}{
 Package: \tab HRM\cr
 Type: \tab Package\cr
-Version: \tab 0.5.1\cr
-Date: \tab 2017-03-23\cr
+Version: \tab 0.6.9\cr
+Date: \tab 2017-08-04\cr
 License: \tab GPL-2 | GPL-3 \cr
 }
 }
@@ -24,6 +24,6 @@ Happ, M., Harrar, S. W. and Bathke, A. C. (2016), Inference for low- and high-di
 
 Happ, M., Harrar, S. W. and Bathke, A. C. (2017), High-dimensional Repeated Measures. Journal of Statistical Theory and Practice. doi: 10.1080/15598608.2017.1307792
 
-Staffen, W., Strobl, N., Zauner, H., Holler, Y., Dobesberger, J. and Trinka, E. (2014). Combining SPECT and EEG analysis for assessment of disorders with amnestic symptoms to enhance accuracy in early diagnostics. Poster A19 Presented at the 11th Annual Meeting of the Austrian Society of Neurology. 26th-29th March 2014, Salzburg, Austria.
+Staffen, W., Strobl, N., Zauner, H., Hoeller, Y., Dobesberger, J. and Trinka, E. (2014). Combining SPECT and EEG analysis for assessment of disorders with amnestic symptoms to enhance accuracy in early diagnostics. Poster A19 Presented at the 11th Annual Meeting of the Austrian Society of Neurology. 26th-29th March 2014, Salzburg, Austria.
 }
 \keyword{ package }

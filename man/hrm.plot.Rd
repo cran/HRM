@@ -26,7 +26,7 @@ hrm.plot(data, group, factor1, subject, response, xlab = "dimension",
 Plots profiles of the groups.
 }
 \description{
-Plots profiles of the groups.
+Plots profiles of the groups in case of one whole- and one subplot-factor.
 }
 \examples{
 data(EEG)

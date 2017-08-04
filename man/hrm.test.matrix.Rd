@@ -2,7 +2,7 @@
 % Please edit documentation in R/Repeated.R
 \name{hrm.test.matrix}
 \alias{hrm.test.matrix}
-\title{Test for no main treatment effect, no main time effect, no simple treatment effect and no interaction between treatment and time}
+\title{Test for main and interaction effects.}
 \usage{
 hrm.test.matrix(data, alpha = 0.05)
 }
@@ -12,7 +12,11 @@ hrm.test.matrix(data, alpha = 0.05)
 \item{alpha}{alpha level used for the test}
 }
 \value{
-Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
+Returns an object from class HRM containing
+\item{result}{A dat frame with the results from the hypotheses tests.}
+\item{alpha}{The type-I error rate which was used.}
+\item{subject}{The column name identifying the subjects.}
+\item{factors}{A list containing the whole- and subplot factors.}
 }
 \description{
 Test for no main treatment effect, no main time effect, no simple treatment effect and no interaction between treatment and time

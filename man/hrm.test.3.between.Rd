@@ -5,7 +5,7 @@
 \title{Test for no main effects and interaction effects of two crossed between-subject factors and one within-subject factor}
 \usage{
 hrm.test.3.between(X, alpha, group, factor1, factor2, factor3, subject, data,
-  testing = rep(1, 15))
+  testing = rep(1, 15), formula)
 }
 \arguments{
 \item{X}{list containing the data matrices of all groups}
@@ -23,6 +23,10 @@ hrm.test.3.between(X, alpha, group, factor1, factor2, factor3, subject, data,
 \item{subject}{column name of the data frame X identifying the subjects}
 
 \item{data}{column name of the data frame X containing the measurement data}
+
+\item{testing}{vector specifying which hypotheses should be tested}
+
+\item{formula}{formula object from the user input}
 }
 \value{
 Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value

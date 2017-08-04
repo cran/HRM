@@ -1,6 +1,6 @@
 ####################################################################################################################################
-### Filename:    f2.R
-### Description: Function for calculating the test statistic for one whole- and one subplot factor
+### Filename:    f3_sub2.R
+### Description: Function for calculating the test statistic for one whole- and two subplot factors
 ###              
 ###
 ###
@@ -12,15 +12,17 @@
 #' @param alpha alpha level used for the test
 #' @param group column name of the data frame X specifying the groups
 #' @param factor1 column name of the data frame X of the first factor variable
+#' @param factor2 column name of the data frame X of the second factor variable
 #' @param subject column name of the data frame X identifying the subjects
-#' @param data column name of the response variable
+#' @param data column name of the data frame X containing the measurement data
 #' @param H string specifying the hypothesis
 #' @param text a string, which will be printed in the output
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.1w.1f <- function(X, alpha, group , factor1, subject, data, H, text ){
+hrm.1w.2f <- function(X, alpha, group , factor1, factor2, subject, data, H, text = "" ){
   
-  stopifnot(is.data.frame(X),is.character(subject), is.character(group),is.character(factor1), alpha<=1, alpha>=0)
+  stopifnot(is.data.frame(X),is.character(subject), is.character(group),is.character(factor1),is.character(factor2), alpha<=1, alpha>=0)
+  
   f <- 0
   f0 <- 0
   crit <- 0
@@ -29,41 +31,58 @@ hrm.1w.1f <- function(X, alpha, group , factor1, subject, data, H, text ){
   
   group <- as.character(group)
   factor1 <- as.character(factor1)
+  factor2 <- as.character(factor2)
   subject <- as.character(subject)
   X <- split(X, X[,group], drop=TRUE)
   a <- length(X)
   d <- nlevels(X[[1]][,factor1])
-  c <- 1
+  c <- nlevels(X[[1]][,factor2])
   n <- rep(0,a) 
   
+  
   for(i in 1:a){
-    X[[i]] <- X[[i]][ order(X[[i]][,subject], X[[i]][,factor1]), ]
-    X[[i]]<-X[[i]][,data]
+    X[[i]] <- X[[i]][ order(X[[i]][,subject], X[[i]][,factor1], X[[i]][,factor2]), ]
+    X[[i]]<- X[[i]][,data]
     X[[i]] <- matrix(X[[i]],ncol=d*c,byrow=TRUE)
     n[i] <- dim(X[[i]])[1]
   }
   
   # creating X_bar (list with a entries)
   X_bar <- as.matrix(vec(sapply(X, colMeans, na.rm=TRUE)))
-
-
-  if(H=="A"){
-    K <- 1/d*J(d)
-    S <- diag(n)-1/sum(n)*n%*%t(n)
-  } else if(H=="Au"){
-    K <- 1/d*J(d)
+  
+  # defining the hypothesis matrices
+  if(H==1){ # A
+    K <- 1/(d*c)*J(d*c)
     S <- P(a)
-  } else if(H=="B"){
-    K <- P(d)
-    S <- J(a)
-  } else if(H=="AB"){
-    K <- P(d)
+    text <- paste(as.character(group))
+  } else if(H==2){ # B
+    K <- kronecker(P(d), 1/c*J(c))
+    S <- 1/a*J(a)
+    text <- paste(as.character(factor1))
+  } else if(H==3){ # C
+    K <- kronecker(1/d*J(d), P(c))
+    S <- 1/a*J(a)
+    text <- paste(as.character(factor2))
+  } else if(H==4){ # AB
+    K <- kronecker(P(d), 1/c*J(c))
     S <- P(a)
+    text <- paste(as.character(group),":",as.character(factor1))
+  } else if(H==5){ # AC
+    K <- kronecker(1/d*J(d), P(c))
+    S <- P(a)
+    text <- paste(as.character(group),":",as.character(factor2))
+  } else if(H==6){ # BC
+    K <- kronecker(P(d), P(c))
+    S <- 1/a*J(a)
+    text <- paste(as.character(factor1),":",as.character(factor2))
+  } else if(H==7){ # ABC
+    K <- kronecker(P(d), P(c))
+    S <- P(a)
+    text <- paste(as.character(group),":",as.character(factor1), ":", as.character(factor2))
   }
   
-  
   # creating dual empirical covariance matrices
-  K_AB <- kronecker(S, K)
+  K_Hypothesis <- kronecker(S, K)
   V <- lapply(X, DualEmpirical2, B=K)
   
   #################################################################################################
@@ -115,16 +134,16 @@ hrm.1w.1f <- function(X, alpha, group , factor1, subject, data, H, text ){
   crit <- qf(1-alpha,f,f0)
   
   # Test
+  
   direct <- direct.sum(1/n[1]*var(X[[1]]),1/n[2]*var(X[[2]]))
   if(a>2){
     for(i in 3:a) {
       direct <- direct.sum(direct, 1/n[i]*var(X[[i]]))
     }
   }
-
-  test <- (t(X_bar)%*%K_AB%*%X_bar)/(t(rep(1,dim(K_AB)[1]))%*%(K_AB*direct)%*%(rep(1,dim(K_AB)[1])))
+  test <- (t(X_bar)%*%K_Hypothesis%*%X_bar)/(t(rep(1,dim(K_Hypothesis)[1]))%*%(K_Hypothesis*direct)%*%(rep(1,dim(K_Hypothesis)[1])))
   p.value <- 1-pf(test,f,f0)
-  output <- data.frame(hypothesis=text,df1=f,df2=f0, crit=crit, test=test, p.value=p.value, sign.code=.hrm.sigcode(p.value))
+  output <- data.frame(hypothesis=text, df1=f,df2=f0, crit=crit, test=test, p.value=p.value, sign.code=.hrm.sigcode(p.value))
   
   
   return (output)
