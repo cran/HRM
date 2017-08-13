@@ -1,6 +1,6 @@
 Package: HRM
-Version: 0.6.9
-Date: 2017-08-04
+Version: 0.7.1
+Date: 2017-08-13
 Title: High-Dimensional Repeated Measures
 Authors@R: c(person("Martin Happ", role = c("aut", "cre"),
                       email = "martin.happ@aon.at"),
@@ -19,6 +19,6 @@ Description: Methods for testing main and interaction effects in possibly
 License: GPL-2 | GPL-3
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-08-04 17:13:22 UTC; Martin
+Packaged: 2017-08-13 20:59:19 UTC; Martin
 Repository: CRAN
-Date/Publication: 2017-08-04 17:20:15 UTC
+Date/Publication: 2017-08-13 21:04:31 UTC

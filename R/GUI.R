@@ -30,7 +30,6 @@ gui.results <- function(result, factors, dec, sep) {
   }
   save_LaTeX_cb <- function(widget, window){
     directory <- NULL
-    #tryCatch(directory <- choose.dir(default=getwd()), error = function(e){  "" }) only works on Windows OS; therefore tkchooseDirectory used
     tryCatch(directory <- tclvalue(tkchooseDirectory(initialdir=getwd())), error = function(e){  "" }, warning = function(w) "")
     if(!is.null(directory) & !is.na(directory) & directory != ""){
       tryCatch({
@@ -185,7 +184,6 @@ gui.results <- function(result, factors, dec, sep) {
   saveResults <- function(object, user.data){
     result <- user.data
     directory <- NULL
-    #tryCatch(directory <- choose.dir(default=getwd()), error = function(e){  "" }) only works on Windows OS; therefore tkchooseDirectory used
     tryCatch(directory <- tclvalue(tkchooseDirectory(initialdir=getwd())), error = function(e){  "" }, warning = function(w) "")
     if(!is.null(directory) & !is.na(directory) & directory != ""){
       tryCatch({
@@ -476,7 +474,6 @@ hrm.GUI <- function(){
   getDirectory <- function(object, user.data){
     directory <- NULL
     # get the path to the file
-    #tryCatch({directory <- choose.files(default = getwd(), multi = FALSE)  #file.choose()
     tryCatch({directory <- tclvalue(tkgetOpenFile(initialdir=getwd())) 
     stopifnot(directory!="")
     

@@ -64,6 +64,7 @@ print.HRM <- function(x, ...) {
     print(x$formula)
     cat("\n")
   }
+
   print(x$result, row.names = FALSE)
   cat("\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1")
 }
@@ -83,6 +84,7 @@ summary.HRM <- function(object, ...) {
     cat("\n")
     cat("\n")
   }
+  
   print(object$result, row.names = FALSE)
   cat("\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1")
 }
