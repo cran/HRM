@@ -8,7 +8,7 @@
 
 #' Test for influence of factor A
 #' 
-#' @param X list containing the data matrices of all groups
+#' @param X dataframe containing the data in the long table format
 #' @param alpha alpha level used for the test
 #' @param group column name of the data frame X specifying the groups
 #' @param subgroup column name of the subgroups (crossed with groups)

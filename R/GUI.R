@@ -51,8 +51,8 @@ gui.results <- function(result, factors, dec, sep) {
   actions <- list(
     list("FileMenu", NULL, "_File"),
     #  list("Open", "gtk-open", "_Open File", "<control>O", "Open CSV", quit_cb),
-    list("Save", "gtk-save", "_Save as LaTeX Table", "<control>S", "Save CSV", save_LaTeX_cb),
-    list("Save2", "gtk-save", "_Save File", "<control>S", "Save2 CSV", save_cb),
+    list("Save", "gtk-save", "_Save as LaTeX Table", "<control>S", "Save Table", save_LaTeX_cb),
+    list("Save2", "gtk-save", "_Save File", "<control>S", "Save Results", save_cb),
     list("Exit", "gtk-quit", "E_xit", "<control>X", "Exit", quit_cb)
   )
   action_group <- RGtk2::gtkActionGroup("spreadsheetActions")
@@ -572,13 +572,13 @@ hrm.GUI <- function(){
           }, warning = function(w) "", error = function(e) {GUI_error(e, "There is a problem with your formula for the response variable.")
             errorOccured <<- 1})
         }
-
+        
 
         if(!is.na(alpha) & errorOccured == 0){
-          if(alpha > 0 & alpha < 1) {
+          if(alpha > 0 & alpha < 1) { 
             # if the input by the user is fine, then do the caluclation
             tryCatch({
-                result <- hrm_test(formula = formula, data = tmp, alpha = alpha, subject = subject )
+                result <- hrm_test(formula = formula, data = tmp, alpha = alpha, subject = subject )$result
                 
                 # determin which columns are whole- and subplot factors
                 dat <- model.frame(formula, tmp)
@@ -604,8 +604,8 @@ hrm.GUI <- function(){
                 factors <- list(colnames(dat)[wholeplot], colnames(dat)[subplot])
                 
                 # showing results
-                gui.results(result$test, factors, RGtk2::gtkEntryGetText(decEntry), RGtk2::gtkEntryGetText(sepEntry))
-              }, error = function(e) {GUI_error(e,NULL) 
+                gui.results(result, factors, RGtk2::gtkEntryGetText(decEntry), RGtk2::gtkEntryGetText(sepEntry))
+              }, error = function(e) {GUI_error(e, NULL) 
                 errorOccured <<- 1})
             
             # if there are only two factors; 1 whole- and 1 subplot-facor, then plot the profiles

@@ -8,7 +8,7 @@
 
 #' Test for 1 wholeplot and 3 subplot-factors
 #' 
-#' @param X dataframe containing the data and factor variables
+#' @param X dataframe containing the data in the long table format
 #' @param alpha alpha level used for the test
 #' @param group column name of the data frame X specifying the groups
 #' @param factor1 column name of the data frame X of the first factor variable
@@ -45,7 +45,7 @@ hrm.1w.3f <- function(X, alpha, group , factor1, factor2, factor3, subject, data
   
   
   for(i in 1:a){
-    X[[i]] <- X[[i]][ order(X[[i]][,subject], X[[i]][,factor1], X[[i]][,factor2]), ]
+    X[[i]] <- X[[i]][ order(X[[i]][,subject], X[[i]][,factor1], X[[i]][,factor2], X[[i]][,factor3]), ]
     X[[i]] <- X[[i]][,data]
     X[[i]] <- matrix(X[[i]],ncol=d*c*c2,byrow=TRUE)
     n[i] <- dim(X[[i]])[1]

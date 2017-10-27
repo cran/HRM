@@ -8,7 +8,7 @@
 
 #' Test for interaction of factor A and B
 #' 
-#' @param X list containing the data matrices of all groups
+#' @param X dataframe containing the data in the long table format
 #' @param alpha alpha level used for the test
 #' @param group column name of the data frame X specifying the groups
 #' @param factor1 column name of the data frame X of the first factor variable

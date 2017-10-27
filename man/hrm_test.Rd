@@ -17,7 +17,7 @@ hrm_test(formula, data, alpha = 0.05, subject)
 }
 \value{
 Returns an object from class HRM containing
-\item{result}{A dat frame with the results from the hypotheses tests.}
+\item{result}{A dataframe with the results from the hypotheses tests.}
 \item{formula}{The formula object which was used.}
 \item{alpha}{The type-I error rate which was used.}
 \item{subject}{The column name identifying the subjects.}

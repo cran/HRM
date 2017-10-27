@@ -1,6 +1,6 @@
 ####################################################################################################################################
 ### Filename:    Repeated.R
-### Description: Main file, where end-user functions are defined
+### Description: Main file, where end-user functions are defined;
 ###              EEG data example
 ###
 ###
@@ -27,10 +27,6 @@
 #' @usage data(EEG)
 #' @format A data frame with 6400 rows and 7 variables.
 "EEG"
-
-# functions which define the estimator
-
-
 
 
 #' Test for no main treatment effect, no main time effect, no simple treatment effect and no interaction between treatment and time
@@ -103,7 +99,7 @@ hrm.test.matrix <- function(data, alpha=0.05){
 
 #' Test for no main effects and interactino effects of one between-subject factor and one crossed within-subject factors
 #' 
-#' @param X list containing the data matrices of all groups
+#' @param X dataframe containing the data in the long table format
 #' @param alpha alpha level used for the test
 #' @param group column name of the data frame X specifying the groups
 #' @param factor1 column name of the data frame X of the first factor variable
@@ -115,7 +111,6 @@ hrm.test.matrix <- function(data, alpha=0.05){
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
 hrm.test.2.one <- function(X, alpha, group , factor1, subject, data, testing = rep(1,4), formula ){
-  
 
   temp0 <- if(testing[1]) {hrm.1w.1f(X, alpha, group , factor1,  subject, data, "A", paste(as.character(group), " (weighted)"))}
   temp1 <- if(testing[2]) {hrm.1w.1f(X, alpha, group , factor1,  subject, data, "Au", paste(as.character(group)))}
@@ -135,7 +130,7 @@ hrm.test.2.one <- function(X, alpha, group , factor1, subject, data, testing = r
 
 #' Test for no main effects and interactino effects of one between-subject factor and two crossed within-subject factors
 #' 
-#' @param X list containing the data matrices of all groups
+#' @param X dataframe containing the data in the long table format
 #' @param alpha alpha level used for the test
 #' @param group column name of the data frame X specifying the groups
 #' @param factor1 column name of the data frame X of the first factor variable
@@ -147,7 +142,6 @@ hrm.test.2.one <- function(X, alpha, group , factor1, subject, data, testing = r
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
 hrm.test.2.within <- function(X, alpha, group , factor1, factor2, subject, data, testing = rep(1,7), formula ){
-
   
   # create list for storing results; NULL used, because it is ignored by rbind
   temp <- list(NULL, NULL, NULL, NULL, NULL, NULL, NULL)
@@ -172,7 +166,7 @@ hrm.test.2.within <- function(X, alpha, group , factor1, factor2, subject, data,
 
 #' Test for no main effects and interaction effects of two crossed between-subject factors and one within-subject factor
 #' 
-#' @param X list containing the data matrices of all groups
+#' @param X dataframe containing the data in the long table format
 #' @param alpha alpha level used for the test
 #' @param group column name of the data frame X specifying the groups
 #' @param subgroup column name of the subgroups (crossed with groups)
@@ -207,7 +201,7 @@ hrm.test.2.between <- function(X, alpha, group , subgroup, factor, subject, data
 
 #' Test for no main effects and interaction effects of two crossed between-subject factors and one within-subject factor
 #' 
-#' @param X list containing the data matrices of all groups
+#' @param X dataframe containing the data in the long table format
 #' @param alpha alpha level used for the test
 #' @param group column name of the data frame X specifying the groups
 #' @param subgroup column name of the subgroups (crossed with groups)
@@ -241,7 +235,7 @@ hrm.test.2.between.within <- function(X, alpha, group , subgroup, factor1, facto
 
 #' Test for no main effects and interaction effects of two crossed between-subject factors and one within-subject factor
 #' 
-#' @param X list containing the data matrices of all groups
+#' @param X dataframe containing the data in the long table format
 #' @param alpha alpha level used for the test
 #' @param group column name of the data frame X specifying the groups
 #' @param factor1 column name of the data frame X of the first within-subject factor
@@ -320,10 +314,10 @@ hrm.test.dataframe <- function(data, alpha = 0.05, group , subgroup, factor1, fa
   data <- response
   X <- temp
   
-  if(missing(factor1) || !is.character(factor1)){
-    print("At least one within-subject factor is needed!")
-    stop("factor1 column name not specified ")
-  }
+  # if(missing(factor1) || !is.character(factor1)){
+  #   print("At least one within-subject factor is needed!")
+  #   stop("factor1 column name not specified ")
+  # }
   
   # if(missing(group) || !is.character(group)){
   #   print("At least one between-subject factor is needed!")
@@ -369,10 +363,24 @@ hrm.test.dataframe <- function(data, alpha = 0.05, group , subgroup, factor1, fa
   if(!missing(factor3)){
     countSubplotFactor <- countSubplotFactor*nlevels(s1[,factor3])
   }
+  if(countSubplotFactor==0 & measurements == 1){
+    countSubplotFactor <- 1
+  }
   if(!(measurements == countSubplotFactor)){
     stop(paste("The number of repeated measurements per subject (", measurements, ") is uneqal to the number of levels of the subplot factors (", countSubplotFactor, ")."))
   }
   
+  # case: no subplot, one wholeplot
+  if(missing(factor2) & missing(subgroup) & missing(factor3) & missing(factor1) & !missing(group)){
+    
+    if(!is.factor(X[,group])){
+      stop(paste("The column ", group, " is not a factor." ))
+    }
+    
+    return(hrm.test.1.none(X, alpha , group, subject, data, formula = NULL ))
+  }
+
+  # case: one subplot, no wholeplot
   if(missing(factor2) & missing(subgroup) & missing(factor3) & missing(group) & !missing(factor1)){
     
     if(!is.factor(X[,factor1])){
@@ -551,7 +559,7 @@ hrm_test <- function(formula, data, alpha = 0.05,  subject ){
   if(length(wholeplot)>1 & length(subplot)==3){
     stop("Too many factors are used! Only one whole- and three subplot-factors are supported.")
   }
-  if(length(subplot)<1){
+  if(length(subplot)<1 & length(wholeplot)>1){
     stop("The model needs at least one within-subject factor.")
   }
   
@@ -565,6 +573,18 @@ hrm_test <- function(formula, data, alpha = 0.05,  subject ){
     data <- colnames(dat)[1]
     return(hrm.test.1.one(X, alpha , factor1, subject, data, formula ))   
     
+  }
+  
+  # Case: one wholeplot, no subpot factor
+  if(length(wholeplot) == 1 & length(subplot) < 1){
+    group <- colnames(dat2)[wholeplot[1]]
+    x<-attributes(terms.formula(formula))$term.labels
+    
+    wholeplot<-colnames(dat2[,group])
+    X<-data
+    data <- colnames(dat)[1]
+    return(hrm.test.1.none(X, alpha , group, subject, data, formula ))  
+  
   }
   
   # Case: 1 whole and 1 subplot factor

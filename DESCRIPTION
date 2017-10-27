@@ -1,6 +1,6 @@
 Package: HRM
-Version: 0.7.1
-Date: 2017-08-13
+Version: 0.7.4
+Date: 2017-10-27
 Title: High-Dimensional Repeated Measures
 Authors@R: c(person("Martin Happ", role = c("aut", "cre"),
                       email = "martin.happ@aon.at"),
@@ -10,8 +10,8 @@ Author: Martin Happ [aut, cre], Harrar W. Solomon [aut], Arne C. Bathke [aut]
 Maintainer: Martin Happ <martin.happ@aon.at>
 LazyData: true
 Depends: R (>= 3.4.0), MASS, matrixcalc, plyr, ggplot2
-Imports: xtable, reshape2, tcltk, cairoDevice, RGtk2Extras
-Suggests: RGtk2 (>= 2.8.0)
+Imports: xtable, reshape2, tcltk
+Suggests: RGtk2 (>= 2.8.0), cairoDevice, RGtk2Extras
 Description: Methods for testing main and interaction effects in possibly
     high-dimensional repeated measures in factorial designs. The observations
     of the subjects are assumed to be multivariate normal.
@@ -19,6 +19,6 @@ Description: Methods for testing main and interaction effects in possibly
 License: GPL-2 | GPL-3
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-08-13 20:59:19 UTC; Martin
+Packaged: 2017-10-27 11:10:39 UTC; b1011921
 Repository: CRAN
-Date/Publication: 2017-08-13 21:04:31 UTC
+Date/Publication: 2017-10-27 11:44:26 UTC

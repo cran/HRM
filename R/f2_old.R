@@ -330,7 +330,7 @@ hrm.A_B <- function(n, a, d, X, alpha){
   X <- lapply(X, as.matrix)
   
   # creating X_bar (list with a entries)
-  X_bar <- as.matrix(vec(sapply(X, colMeans, na.rm=TRUE)))
+  X_bar <- as.matrix(vec(as.matrix(sapply(X, colMeans, na.rm=TRUE))))
   
   # creating dual empirical covariance matrices
   V <- lapply(X, DualEmpirical, B = I)
