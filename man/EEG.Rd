@@ -10,9 +10,9 @@ data(EEG)
 }
 \description{
 A dataset containing EEG data (Staffen et al., 2014) of 160 subjects, 4 variables are measured at ten different locations.
-The columns are as follows:
 }
 \details{
+The columns are as follows:
 \itemize{
   \item group. Diagnostic group of the subject: Alzheimer's Disease (AD), Mild Cognitive Impairment (MCI), Subject Cognitive Complaints (SCC+, SCC-).
   \item value. Measured data of a subject at a specific variable and region.

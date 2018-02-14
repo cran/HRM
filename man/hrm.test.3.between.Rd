@@ -8,7 +8,7 @@ hrm.test.3.between(X, alpha, group, factor1, factor2, factor3, subject, data,
   testing = rep(1, 15), formula)
 }
 \arguments{
-\item{X}{list containing the data matrices of all groups}
+\item{X}{dataframe containing the data in the long table format}
 
 \item{alpha}{alpha level used for the test}
 

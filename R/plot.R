@@ -15,10 +15,12 @@
 #' @param response column name within the data frame X containing the response variable
 #' @param xlab label of the x-axis of the plot
 #' @param ylab label of the y-axis of the plot
+#' @param legend logical indicating if a legend should be plotted
+#' @param legend.title title of the legend
 #' @return Plots profiles of the groups.
 #' @example R/example_plot.txt
-#' @keywords export
-hrm.plot <- function(data, group , factor1, subject, response, xlab="dimension", ylab="means" ){
+#' @keywords internal
+hrm.plot <- function(data, group , factor1, subject, response, xlab="time", ylab="mean", legend = TRUE, legend.title = NULL ){
   X<-data
   data<-response
   stopifnot(is.data.frame(X),is.character(subject), is.character(group),is.character(factor1),is.character(data),is.character(xlab),is.character(ylab))
@@ -51,15 +53,28 @@ hrm.plot <- function(data, group , factor1, subject, response, xlab="dimension",
   }
   
   colnames(means) <- c("dimension",groupnames)
-  
+
   means <- melt(means, id.vars="dimension")
   colnames(means) <- c("dimension", "group", "value")
 
-  ggplot() +
-     geom_line(data=means, aes(x=means$dimension, y=means$value,group=means$group,colour=means$group)) +
-     geom_point(data=means, aes(x=means$dimension, y=means$value,group=means$group,colour=means$group),size=1.5) +
-    theme(legend.background = element_rect(),legend.title = element_blank()) +
-    xlab(xlab) + ylab(ylab)
+  pl <- ggplot() +
+        geom_line(data=means, aes(x=means$dimension, y=means$value,group=means$group,colour=means$group)) +
+        geom_point(data=means, aes(x=means$dimension, y=means$value,group=means$group,colour=means$group),size=1.5) +
+        xlab(xlab) +
+        ylab(ylab)
+  
+  if(!legend){
+    pl <- pl + theme(legend.position = "none") 
+  } else {
+    if(!is.null(legend.title) & is.character(legend.title)){
+      pl <- pl + scale_colour_hue(name=legend.title)
+    } else {
+      pl <- pl + theme(legend.title = element_blank())
+    }
+    pl <- pl + theme(legend.background = element_rect()) 
+  }
+  
+  return(pl)
 
 }
 

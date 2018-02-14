@@ -1,6 +1,6 @@
 ####################################################################################################################################
 ### Filename:    utility.R
-### Description: trace estimator functions, dual empirical covariance matrix function and print/summary are defined here
+### Description: trace estimator functions, dual empirical covariance matrix function
 ###              
 ###
 ###
@@ -57,37 +57,6 @@
   return (char)
 }
 
-#' @keywords export
-print.HRM <- function(x, ...) {
-  if(!is.null(x$formula)) {
-    cat("Call:", "\n")
-    print(x$formula)
-    cat("\n")
-  }
-
-  print(x$result, row.names = FALSE)
-  cat("\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1")
-}
-#' @keywords export
-summary.HRM <- function(object, ...) {
-  cat("Summary:\n")
-  cat("\n")
-  if(!is.null(object$formula)) {
-    cat("Call:", "\n")
-    print(object$formula)
-    cat("\n")
-    cat("between-subject factors: ")
-    cat(object$factors[[1]], sep=", ")
-    cat("\n")
-    cat("within-subject factors: ")
-    cat(object$factors[[2]], sep=", ")
-    cat("\n")
-    cat("\n")
-  }
-  
-  print(object$result, row.names = FALSE)
-  cat("\nSignif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1")
-}
 
 #' Function for the indentity matrix
 #' 

@@ -8,7 +8,7 @@ hrm.test.2.between.within(X, alpha, group, subgroup, factor1, factor2, subject,
   data, testing = rep(1, 15), formula)
 }
 \arguments{
-\item{X}{list containing the data matrices of all groups}
+\item{X}{dataframe containing the data in the long table format}
 
 \item{alpha}{alpha level used for the test}
 

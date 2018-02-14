@@ -1,7 +1,7 @@
 ####################################################################################################################################
 ### Filename:    f2_old.R
 ### Description: Functions for testing when using one whole- and one subplotfactor; outdated functions only used for compatibility
-###              within the function hrm.test.matrix
+###              within the function hrm.test.matrices
 ###
 ###
 ####################################################################################################################################
@@ -18,7 +18,7 @@
 #' @keywords internal
 hrm.A.weighted <- function(n, a, d, X, alpha){
   
-  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=1)
+  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=2)
   stopifnot(a == length(X))
   f<-0
   f0<-0
@@ -30,7 +30,7 @@ hrm.A.weighted <- function(n, a, d, X, alpha){
   
   
   # creating X_bar (list with a entries)
-  X_bar <- as.matrix(vec(sapply(X, colMeans, na.rm=TRUE)))
+  X_bar <- as.matrix(vec(as.matrix(sapply(X, colMeans, na.rm=TRUE))))
   
   D_a <- diag(n)-1/sum(n)*n%*%t(n)
   K_A <- kronecker(D_a,J(d))
@@ -120,7 +120,7 @@ hrm.A.weighted <- function(n, a, d, X, alpha){
 #' @keywords internal
 hrm.B <- function(n, a, d, X, alpha){
   
-  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=1)
+  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=2, a>=1)
   stopifnot(a == length(X))
   f<-0
   f0<-0
@@ -130,9 +130,6 @@ hrm.B <- function(n, a, d, X, alpha){
   
   # creating X_bar (list with a entries)
   X_bar <- as.matrix(vec(sapply(X, colMeans, na.rm=TRUE)))
-  
-  D_a <- diag(n)-1/sum(n)*n%*%t(n)
-  K_A <- kronecker(D_a,J(d))
   
   # creating dual empirical covariance matrices
   V <- lapply(X, DualEmpirical, B = P)
@@ -190,12 +187,20 @@ hrm.B <- function(n, a, d, X, alpha){
   
   # Test
   
-  direct <- direct.sum(1/n[1]*var(X[[1]]),1/n[2]*var(X[[2]]))
-  if(a>2){
-    for(i in 3:a) {
+  direct <- 1/n[1]*var(X[[1]])
+  if(a>=2){
+    for(i in 2:a) {
       direct <- direct.sum(direct, 1/n[i]*var(X[[i]]))
     }
   }
+  
+  
+  # direct <- direct.sum(1/n[1]*var(X[[1]]),1/n[2]*var(X[[2]]))
+  # if(a>2){
+  #   for(i in 3:a) {
+  #     direct <- direct.sum(direct, 1/n[i]*var(X[[i]]))
+  #   }
+  # }
   test <- (t(X_bar)%*%K_B%*%X_bar)/(t(rep(1,dim(K_B)[1]))%*%(K_B*direct)%*%(rep(1,dim(K_B)[1])))
   p.value<-1-pf(test,f,f0)
   output <- data.frame(hypothesis="B",df1=f,df2=f0, crit=crit, test=test, p.value=p.value, sign.code=.hrm.sigcode(p.value))
@@ -223,7 +228,7 @@ hrm.B <- function(n, a, d, X, alpha){
 #' @keywords internal
 hrm.AB <- function(n, a, d, X, alpha){
   
-  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=1)
+  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=2, a>=2)
   stopifnot(a == length(X))
   f<-0
   f0<-0
@@ -321,7 +326,7 @@ hrm.AB <- function(n, a, d, X, alpha){
 #' @keywords internal
 hrm.A_B <- function(n, a, d, X, alpha){
   
-  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=1)
+  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=2, a>=2)
   stopifnot(a == length(X))
   f<-0
   f0<-0
@@ -415,7 +420,7 @@ hrm.A_B <- function(n, a, d, X, alpha){
 #' @keywords internal
 hrm.A.unweighted <- function(n, a, d, X, alpha){
   
-  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=1)
+  stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=2)
   stopifnot(a == length(X))
   f<-0
   f0<-0
@@ -424,13 +429,12 @@ hrm.A.unweighted <- function(n, a, d, X, alpha){
   X <- lapply(X, as.matrix)
   
   # creating X_bar (list with a entries)
-  X_bar <- as.matrix(vec(sapply(X, colMeans, na.rm=TRUE)))
+  X_bar <- as.matrix(vec(as.matrix(sapply(X, colMeans, na.rm=TRUE))))
   
   # creating dual empirical covariance matrices, where observations are transformed by a matrix B
   V <- lapply(X, DualEmpirical, B = J)
   
   K_A <- kronecker(P(a),J(d))
-  
   
   
   #################################################################################################
@@ -448,8 +452,6 @@ hrm.A.unweighted <- function(n, a, d, X, alpha){
       j<-j+1
     }
   }
-  
-  
   for(i in 1:a){
     f_2 <- f_2 + ((1-1/a)/(d*n[i]))^2*.E2(n,i,V[[i]])
     j<-i+1
@@ -463,7 +465,6 @@ hrm.A.unweighted <- function(n, a, d, X, alpha){
   
   
   ##################################################################################################
-  
   
   
   #################################################################################################

@@ -1,12 +1,14 @@
 Package: HRM
-Version: 0.7.4
-Date: 2017-10-27
+Version: 0.8.0
+Date: 2018-02-14
 Title: High-Dimensional Repeated Measures
 Authors@R: c(person("Martin Happ", role = c("aut", "cre"),
                       email = "martin.happ@aon.at"),
 	      person("Harrar W. Solomon", role = "aut"),
 	      person("Arne C. Bathke", role = "aut"))
-Author: Martin Happ [aut, cre], Harrar W. Solomon [aut], Arne C. Bathke [aut]
+Author: Martin Happ [aut, cre],
+  Harrar W. Solomon [aut],
+  Arne C. Bathke [aut]
 Maintainer: Martin Happ <martin.happ@aon.at>
 LazyData: true
 Depends: R (>= 3.4.0), MASS, matrixcalc, plyr, ggplot2
@@ -19,6 +21,6 @@ Description: Methods for testing main and interaction effects in possibly
 License: GPL-2 | GPL-3
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-10-27 11:10:39 UTC; b1011921
+Packaged: 2018-02-14 10:00:01 UTC; b1011921
 Repository: CRAN
-Date/Publication: 2017-10-27 11:44:26 UTC
+Date/Publication: 2018-02-14 10:05:28 UTC

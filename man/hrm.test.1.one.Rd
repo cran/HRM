@@ -2,12 +2,12 @@
 % Please edit documentation in R/f1.R
 \name{hrm.test.1.one}
 \alias{hrm.test.1.one}
-\title{Test for no main effects and interactino effects of one between-subject factor and one crossed within-subject factors}
+\title{Test for main time effect (in case of no whole-plot factors)}
 \usage{
 hrm.test.1.one(X, alpha, factor1, subject, data, formula)
 }
 \arguments{
-\item{X}{list containing the data matrices of all groups}
+\item{X}{dataframe containing the data in the long table format}
 
 \item{alpha}{alpha level used for the test}
 
@@ -23,6 +23,6 @@ hrm.test.1.one(X, alpha, factor1, subject, data, formula)
 Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 }
 \description{
-Test for no main effects and interactino effects of one between-subject factor and one crossed within-subject factors
+Test for main time effect (in case of no whole-plot factors)
 }
 \keyword{internal}

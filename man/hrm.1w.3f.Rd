@@ -8,7 +8,7 @@ hrm.1w.3f(X, alpha, group, factor1, factor2, factor3, subject, data, S, K1, K2,
   K3, hypothesis)
 }
 \arguments{
-\item{X}{dataframe containing the data and factor variables}
+\item{X}{dataframe containing the data in the long table format}
 
 \item{alpha}{alpha level used for the test}
 

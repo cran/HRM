@@ -7,7 +7,7 @@
 hrm.1f(X, alpha, factor1, subject, data, H = "B", text = "")
 }
 \arguments{
-\item{X}{list containing the data matrices of all groups}
+\item{X}{dataframe containing the data in the long table format}
 
 \item{alpha}{alpha level used for the test}
 

@@ -27,6 +27,7 @@ hrm.test.1.none <- function(X, alpha , group, subject, data, formula ){
   output$alpha <- alpha
   output$subject <- subject
   output$factors <- list(c(group), c("none"))
+  output$data <- X
   class(output) <- "HRM"
   
   return (output)
@@ -151,4 +152,4 @@ hrm.1w.0f <- function(X, alpha, group, subject, data, H, text ){
   return (output)
 }
 
-# Hypothesis AC End ------------------------------------------------------------
+# End ------------------------------------------------------------

@@ -229,11 +229,12 @@ gui.results <- function(result, factors, dec, sep) {
   
 }
 
-#' Graphical User Interface (R Package RGtk2 needed) for the Function 'hrm_test': Test for main effects and interaction effects of one or two between-subject factors and one, two or three within-subject factors (at most four factors can be used).
+#' Graphical User Interface for Testing Multi-Factor High-Dimensional Repeated Measures
 #' 
+#' @description Graphical User Interface (R Package RGtk2 needed) for the Function 'hrm_test': Test for main effects and interaction effects of one or two between-subject factors and one, two or three within-subject factors (at most four factors can be used).
 #' @return The results can be saved as LaTeX Code or as plain text. Additionally a plot of the group profiles an be saved when using one whole- and one subplot factor. 
 #' @keywords export
-hrm.GUI <- function(){
+hrm_GUI <- function(){
   
   # variable to temporarily store the loaded data from the user
   tmp <- NULL
@@ -578,7 +579,9 @@ hrm.GUI <- function(){
           if(alpha > 0 & alpha < 1) { 
             # if the input by the user is fine, then do the caluclation
             tryCatch({
-                result <- hrm_test(formula = formula, data = tmp, alpha = alpha, subject = subject )$result
+              
+                object.hrm <-  hrm_test(formula = formula, data = tmp, alpha = alpha, subject = subject )
+                result <- object.hrm$result
                 
                 # determin which columns are whole- and subplot factors
                 dat <- model.frame(formula, tmp)
@@ -613,13 +616,16 @@ hrm.GUI <- function(){
               tryCatch(responseVariable <- as.character(terms.formula(formula)[[2]]), warning = function(w) "", error = function(e) "" )
               if(is.character(responseVariable)){
                 print("Profiles are being plotted ...")
-                #dev.new() # first graphics device is within RStudio
-                #dev.new() # show plot using new graphics device (i.e. separate window for plot); easer than drawing with cairoDevice
                 GUI_plot()
                 tryCatch({
-                  print(hrm.plot(data = tmp, group = groupFactor, factor1 = timeFactor, subject = subject, response = responseVariable, xlab = "dimension", ylab = "means"))
+                  print(plot.HRM(object.hrm))
                 }, error = function(e) "", warning = function(w)  "")
               }
+            } else if(nfactors == 1 & !is.null(timeFactor) & errorOccured == 0) {
+                GUI_plot()
+                tryCatch({
+                  print(plot.HRM(object.hrm))
+                }, error = function(e) "", warning = function(w)  "")
             }
           } else {
             GUI_error(NULL, "The type-I error rate needs to be within the interval (0, 1).")

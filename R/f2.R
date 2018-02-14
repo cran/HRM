@@ -130,4 +130,4 @@ hrm.1w.1f <- function(X, alpha, group , factor1, subject, data, H, text ){
   return (output)
 }
 
-# Hypothesis AC End ------------------------------------------------------------
+# End ------------------------------------------------------------
