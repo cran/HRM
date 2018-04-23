@@ -4,7 +4,7 @@
 \alias{hrm.B}
 \title{Test for no main time effect}
 \usage{
-hrm.B(n, a, d, X, alpha)
+hrm.B(n, a, d, X, alpha, nonparametric = FALSE)
 }
 \arguments{
 \item{n}{an vector containing the sample sizes of all groups}

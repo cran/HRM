@@ -5,7 +5,7 @@
 \title{Test for 1 wholeplot and 3 subplot-factors}
 \usage{
 hrm.1w.3f(X, alpha, group, factor1, factor2, factor3, subject, data, S, K1, K2,
-  K3, hypothesis)
+  K3, hypothesis, nonparametric, ranked)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

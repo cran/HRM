@@ -4,7 +4,7 @@
 \alias{hrm.1f}
 \title{Test for interaction of factor A and B}
 \usage{
-hrm.1f(X, alpha, factor1, subject, data, H = "B", text = "")
+hrm.1f(X, alpha, factor1, subject, data, H = "B", text = "", nonparametric)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

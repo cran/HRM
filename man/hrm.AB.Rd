@@ -4,7 +4,7 @@
 \alias{hrm.AB}
 \title{Test for no interaction between treatment and time}
 \usage{
-hrm.AB(n, a, d, X, alpha)
+hrm.AB(n, a, d, X, alpha, nonparametric = FALSE)
 }
 \arguments{
 \item{n}{an vector containing the sample sizes of all groups}

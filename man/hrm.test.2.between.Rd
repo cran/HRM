@@ -5,7 +5,7 @@
 \title{Test for no main effects and interaction effects of two crossed between-subject factors and one within-subject factor}
 \usage{
 hrm.test.2.between(X, alpha, group, subgroup, factor, subject, data,
-  testing = rep(1, 7), formula)
+  testing = rep(1, 7), formula, nonparametric)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

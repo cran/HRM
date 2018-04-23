@@ -15,6 +15,7 @@
 #' @param formula A model formula object. The left hand side contains the response variable and the right hand side contains the whole- and subplot factors.
 #' @param subject column name within the data frame X identifying the subjects
 #' @param alpha alpha level used for calculating the critical value for the test
+#' @param nonparametric Logical variable indicating wether the noparametric version of the test statistic should be used
 #' @param ... Further arguments passed to 'hrm_test' will be ignored
 #' @return Returns an object from class HRM containing
 #' @return \item{result}{A dataframe with the results from the hypotheses tests.}
@@ -45,13 +46,17 @@ hrm_test.list <- function(data, alpha = 0.05, ...) {
 #' @rdname hrm_test
 #' @method hrm_test data.frame
 #' @keywords export
-hrm_test.data.frame <- function(data, formula, alpha = 0.05,  subject, ... ) {
-  return(hrm_test_internal(formula=formula, data=data, alpha=alpha,subject=subject ))
+hrm_test.data.frame <- function(data, formula, alpha = 0.05,  subject, nonparametric = FALSE, ... ) { 
+  return(hrm_test_internal(formula=formula, data=data, alpha=alpha,subject=subject, nonparametric ))
 }
 
 
 #' @keywords export
 print.HRM <- function(x, ...) {
+  if(x$nonparametric){
+    cat("Nonparametric Repeated Measures Analysis\n")
+    cat("\n")
+  }
   if(!is.null(x$formula)) {
     cat("Call:", "\n")
     print(x$formula)
@@ -66,6 +71,9 @@ print.HRM <- function(x, ...) {
 
 #' @keywords export
 summary.HRM <- function(object, ...) {
+  if(object$nonparametric){
+    cat("Nonparametric Repeated Measures Analysis\n")
+  }
   cat("Summary:\n")
   cat("\n")
   if(!is.null(object$formula)) {

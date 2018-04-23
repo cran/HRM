@@ -4,7 +4,7 @@
 \alias{hrm.A.weighted}
 \title{Test for no main treatment effect (weighted version)}
 \usage{
-hrm.A.weighted(n, a, d, X, alpha)
+hrm.A.weighted(n, a, d, X, alpha, nonparametric = FALSE)
 }
 \arguments{
 \item{n}{an vector containing the sample sizes of all groups}

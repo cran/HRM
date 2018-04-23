@@ -6,6 +6,9 @@
 ###
 ####################################################################################################################################
 
+
+
+
 #' Test for interaction of factor A and B
 #' 
 #' @param X dataframe containing the data in the long table format
@@ -18,34 +21,67 @@
 #' @param text a string, which will be printed in the output
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.1w.1f <- function(X, alpha, group , factor1, subject, data, H, text ){
+hrm.1w.1f <- function(X, alpha, group , factor1, subject, data, H, text, nonparametric, ranked ){
   
-  stopifnot(is.data.frame(X),is.character(subject), is.character(group),is.character(factor1), alpha<=1, alpha>=0)
+  stopifnot(is.data.frame(X),is.character(subject), is.character(group),is.character(factor1), alpha<=1, alpha>=0, is.logical(nonparametric))
   f <- 0
   f0 <- 0
   crit <- 0
   test <- 0  
   
-  
   group <- as.character(group)
   factor1 <- as.character(factor1)
   subject <- as.character(subject)
-  X <- split(X, X[,group], drop=TRUE)
-  a <- length(X)
-  d <- nlevels(X[[1]][,factor1])
-  c <- 1
-  n <- rep(0,a) 
   
+  X <- as.data.table(X)
+  setnames(X, c(data, group, factor1, subject), c("data", "group", "factor1", "subject"))
+
+  a <- nlevels(X[,group])
+  d <- nlevels(X[,factor1])
+  c <- 1
+  n <- table(X[,group])/d
+  KGV <- Reduce(Lcm, n)
+  lambda <- KGV/n
+  
+  if(max(lambda) <= 100 & max(n) <= 30 & nonparametric & is.null(ranked)){
+    len <- dim(X)[1]
+    prData <- list(X,0)
+    z <- levels(X[,group])
+    
+    # amplify data to artificially create balanced groups
+    for(i in 1:a){
+      prData[[i+1]] <- X[group==z[i]][rep(1:(n[i]*d), each = (lambda[i]-1)), ]
+    }
+    X <- rbindlist(prData)
+    X[,data]<- (rank(X[,data], ties.method = "average")-1/2)*1/(KGV*a*d)
+
+    # select original observations from amplified data
+    X <- X[1:len,]
+  }
+  
+  X <- split(X, X[,group], drop=TRUE)
   for(i in 1:a){
-    X[[i]] <- X[[i]][ order(X[[i]][,subject], X[[i]][,factor1]), ]
-    X[[i]]<-X[[i]][,data]
+    X[[i]] <- X[[i]][ order(subject, factor1), ]
+    X[[i]] <- X[[i]][,data]
     X[[i]] <- matrix(X[[i]],ncol=d*c,byrow=TRUE)
     n[i] <- dim(X[[i]])[1]
   }
-  
-  # creating X_bar (list with a entries)
-  X_bar <- as.matrix(vec(sapply(X, colMeans, na.rm=TRUE)))
 
+  if((max(lambda) > 100 | max(n) > 30) & nonparametric & is.null(ranked)){
+    X <- pseudorank(X)
+    for(i in 1:a){
+      X[[i]] <- 1/(sum(n)*d)*(X[[i]] - 1/2)
+    }
+  }
+
+  if(is.null(ranked)){
+    eval.parent(substitute(ranked<-X))
+  } else {
+    X <- ranked
+  }
+
+  # creating X_bar (list with a entries)
+  X_bar <- as.matrix(vec(sapply(X, colMeans, na.rm=TRUE))) #- (sum(n)*d+1)*1/2
 
   if(H=="A"){
     K <- 1/d*J(d)
@@ -60,20 +96,32 @@ hrm.1w.1f <- function(X, alpha, group , factor1, subject, data, H, text ){
     K <- P(d)
     S <- P(a)
   }
-  
-  
+
   # creating dual empirical covariance matrices
   K_AB <- kronecker(S, K)
   V <- lapply(X, DualEmpirical2, B=K)
   
+  ##########################
+  ### U statistics
+  #########################
+  
+  Q = data.frame(Q1 = rep(0,a), Q2 = rep(0,a))
+  if(nonparametric){
+    for(i in 1:a){
+      Q[i,] <- calcU(X,n,i,K)
+    }    
+  }
+
+   
   #################################################################################################
+
   
   # f
   f_1 <- 0
   f_2 <- 0
   
   for(i in 1:a){
-    f_1 <- f_1 + (S[i,i]*1/n[i])^2*.E1(n,i,V[[i]])
+    f_1 <- f_1 + (S[i,i]*1/n[i])^2*.E1(n,i,V[[i]],nonparametric,Q)
     j <- i+1
     while(j<=a){
       f_1 <- f_1 + 2*(S[i,i]*1/n[i])*(S[j,j]*1/n[j])*.E3(V[[i]],V[[j]])
@@ -82,7 +130,7 @@ hrm.1w.1f <- function(X, alpha, group , factor1, subject, data, H, text ){
   }
   
   for(i in 1:a){
-    f_2 <- f_2 + (S[i,i]*1/n[i])^2*.E2(n,i,V[[i]])
+    f_2 <- f_2 + (S[i,i]*1/n[i])^2*.E2(n,i,V[[i]],nonparametric,Q)
     j <- i+1
     while(j<=a){
       f_2 <- f_2 + 2*S[i,j]*S[j,i]*1/(n[i]*n[j])*.E4(1/(n[i]-1)*P(n[i])%*%X[[i]],1/(n[j]-1)*K%*%t(X[[j]])%*%P(n[j])%*%X[[j]]%*%K%*%t(X[[i]])%*%P(n[i]))
@@ -92,7 +140,7 @@ hrm.1w.1f <- function(X, alpha, group , factor1, subject, data, H, text ){
   
   f <- f_1/f_2
   
-  
+
   ##################################################################################################
   
   
@@ -104,13 +152,14 @@ hrm.1w.1f <- function(X, alpha, group , factor1, subject, data, H, text ){
   
   
   for(i in 1:a){
-    f0_2 <- f0_2 + (S[i,i]*1/n[i])^2*1/(n[i]-1)*.E2(n,i,V[[i]])
+    f0_2 <- f0_2 + (S[i,i]*1/n[i])^2*1/(n[i]-1)*.E2(n,i,V[[i]],nonparametric,Q)
   }
-  
+
+  #debuging <<-abs(fehl[1])*d/n[1]^4*1/f0_2
   f0 <- f0_1/f0_2
   
   ##################################################################################################
-  
+
   # critical value
   crit <- qf(1-alpha,f,f0)
   

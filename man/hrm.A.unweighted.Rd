@@ -4,7 +4,7 @@
 \alias{hrm.A.unweighted}
 \title{Test for no main treatment effect (unweighted version)}
 \usage{
-hrm.A.unweighted(n, a, d, X, alpha)
+hrm.A.unweighted(n, a, d, X, alpha, nonparametric = FALSE)
 }
 \arguments{
 \item{n}{an vector containing the sample sizes of all groups}

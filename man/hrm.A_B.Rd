@@ -4,7 +4,7 @@
 \alias{hrm.A_B}
 \title{Test for no simple treatment effect}
 \usage{
-hrm.A_B(n, a, d, X, alpha)
+hrm.A_B(n, a, d, X, alpha, nonparametric = FALSE)
 }
 \arguments{
 \item{n}{an vector containing the sample sizes of all groups}

@@ -4,7 +4,7 @@
 \alias{hrm_test_internal}
 \title{Test for Multi-Factor High-Dimensional Repeated Measures}
 \usage{
-hrm_test_internal(formula, data, alpha = 0.05, subject)
+hrm_test_internal(formula, data, alpha = 0.05, subject, nonparametric)
 }
 \arguments{
 \item{formula}{A model formula object. The left hand side contains the response variable and the right hand side contains the whole- and subplot factors.}

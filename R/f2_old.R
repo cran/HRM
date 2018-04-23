@@ -16,7 +16,7 @@
 #' @param alpha alpha level used for the test
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.A.weighted <- function(n, a, d, X, alpha){
+hrm.A.weighted <- function(n, a, d, X, alpha, nonparametric = FALSE){
   
   stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=2)
   stopifnot(a == length(X))
@@ -39,6 +39,17 @@ hrm.A.weighted <- function(n, a, d, X, alpha){
   V <- lapply(X, DualEmpirical, B = J)
   
   
+  ##########################
+  ### U statistics
+  #########################
+  
+  Q = data.frame(Q1 = rep(0,a), Q2 = rep(0,a))
+  if(nonparametric){
+    for(i in 1:a){
+      Q[i,] <- calcU(X,n,i,1/d*J(d))
+    }    
+  }
+  
   
   #################################################################################################
   # f <- f_1/f_2: numerator degrees of freedom
@@ -47,7 +58,7 @@ hrm.A.weighted <- function(n, a, d, X, alpha){
   
   # computation of f_1
   for(i in 1:a){
-    f_1 <- f_1 + ((1-n[i]/sum(n))^2)*.E1(n,i,V[[i]])
+    f_1 <- f_1 + ((1-n[i]/sum(n))^2)*.E1(n,i,V[[i]],nonparametric,Q)
     j<-i+1
     while(j<=a){
       f_1 <- f_1 + 2*((1-n[i]/sum(n)))*((1-n[j]/sum(n)))*.E3(V[[i]],V[[j]])
@@ -57,7 +68,7 @@ hrm.A.weighted <- function(n, a, d, X, alpha){
   
   # computation of f_2
   for(i in 1:a){
-    f_2 <- f_2 + ((1-n[i]/sum(n)))^2*.E2(n,i,V[[i]])
+    f_2 <- f_2 + ((1-n[i]/sum(n)))^2*.E2(n,i,V[[i]],nonparametric,Q)
     j<-i+1
     while(j<=a){
       f_2 <- f_2 + 2*(n[i]*n[j])/(d^2*sum(n)^2)*.E4(d/(n[i]-1)*P(n[i])%*%X[[i]],d/(n[j]-1)*J(d)%*%t(X[[j]])%*%P(n[j])%*%X[[j]]%*%J(d)%*%t(X[[i]])%*%P(n[i]))
@@ -78,7 +89,7 @@ hrm.A.weighted <- function(n, a, d, X, alpha){
   
   # computation of f0_2
   for(i in 1:a){
-    f0_2 <- f0_2 + ((1-n[i]/sum(n)))^2*1/(n[i]-1)*.E2(n,i,V[[i]])
+    f0_2 <- f0_2 + ((1-n[i]/sum(n)))^2*1/(n[i]-1)*.E2(n,i,V[[i]],nonparametric,Q)
   }
   
   f0<-f_1/f0_2
@@ -118,7 +129,7 @@ hrm.A.weighted <- function(n, a, d, X, alpha){
 #' @param alpha alpha level used for the test
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.B <- function(n, a, d, X, alpha){
+hrm.B <- function(n, a, d, X, alpha, nonparametric = FALSE){
   
   stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=2, a>=1)
   stopifnot(a == length(X))
@@ -136,6 +147,17 @@ hrm.B <- function(n, a, d, X, alpha){
   
   K_B <- kronecker(J(a),P(d))
   
+  ##########################
+  ### U statistics
+  #########################
+  
+  Q = data.frame(Q1 = rep(0,a), Q2 = rep(0,a))
+  if(nonparametric){
+    for(i in 1:a){
+      Q[i,] <- calcU(X,n,i,P(d))
+    }    
+  }
+  
   
   #################################################################################################
   
@@ -144,7 +166,7 @@ hrm.B <- function(n, a, d, X, alpha){
   f_2 <- 0
   
   for(i in 1:a){
-    f_1 <- f_1 + (1/n[i])^2*.E1(n,i,V[[i]])
+    f_1 <- f_1 + (1/n[i])^2*.E1(n,i,V[[i]],nonparametric,Q)
     j<-i+1
     while(j<=a){
       f_1 <- f_1 + 2*(1/n[i])*(1/n[j])*.E3(V[[i]],V[[j]])
@@ -153,7 +175,7 @@ hrm.B <- function(n, a, d, X, alpha){
   }
   
   for(i in 1:a){
-    f_2 <- f_2 + (1/n[i])^2*.E2(n,i,V[[i]])
+    f_2 <- f_2 + (1/n[i])^2*.E2(n,i,V[[i]],nonparametric,Q)
     j<-i+1
     while(j<=a){
       f_2 <- f_2 + 2*1/(n[i]*n[j])*.E4(1/(n[i]-1)*P(n[i])%*%X[[i]],1/(n[j]-1)*P(d)%*%t(X[[j]])%*%P(n[j])%*%X[[j]]%*%P(d)%*%t(X[[i]])%*%P(n[i]))
@@ -175,7 +197,7 @@ hrm.B <- function(n, a, d, X, alpha){
   
   
   for(i in 1:a){
-    f0_2 <- f0_2 + (1/n[i])^2*1/(n[i]-1)*.E2(n,i,V[[i]])
+    f0_2 <- f0_2 + (1/n[i])^2*1/(n[i]-1)*.E2(n,i,V[[i]],nonparametric,Q)
   }
   
   f0<-f0_1/f0_2
@@ -226,7 +248,7 @@ hrm.B <- function(n, a, d, X, alpha){
 #' @param alpha alpha level used for the test
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.AB <- function(n, a, d, X, alpha){
+hrm.AB <- function(n, a, d, X, alpha, nonparametric = FALSE){
   
   stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=2, a>=2)
   stopifnot(a == length(X))
@@ -244,6 +266,17 @@ hrm.AB <- function(n, a, d, X, alpha){
   
   K_AB <- kronecker(P(a),P(d))
   
+  ##########################
+  ### U statistics
+  #########################
+  
+  Q = data.frame(Q1 = rep(0,a), Q2 = rep(0,a))
+  if(nonparametric){
+    for(i in 1:a){
+      Q[i,] <- calcU(X,n,i,P(d))
+    }    
+  }
+  
   #################################################################################################
   # f
   f_1 <- 0
@@ -252,7 +285,7 @@ hrm.AB <- function(n, a, d, X, alpha){
   
   # phi <- A
   for(i in 1:a){
-    f_1 <- f_1 + (1/n[i]*(1-1/a))^2*.E1(n,i,V[[i]])
+    f_1 <- f_1 + (1/n[i]*(1-1/a))^2*.E1(n,i,V[[i]],nonparametric,Q)
     j<-i+1
     while(j<=a){
       f_1 <- f_1 + 2*(1/n[i]*(1-1/a))*(1/n[j]*(1-1/a))*.E3(V[[i]],V[[j]])
@@ -261,7 +294,7 @@ hrm.AB <- function(n, a, d, X, alpha){
   }
   
   for(i in 1:a){
-    f_2 <- f_2 + (1/n[i]*(1-1/a))^2*.E2(n,i,V[[i]])
+    f_2 <- f_2 + (1/n[i]*(1-1/a))^2*.E2(n,i,V[[i]],nonparametric,Q)
     j<-i+1
     while(j<=a){
       f_2 <- f_2 + 2/(n[i]*n[j]*a^2)*.E4(1/(n[i]-1)*P(n[i])%*%X[[i]],1/(n[j]-1)*P(d)%*%t(X[[j]])%*%P(n[j])%*%X[[j]]%*%P(d)%*%t(X[[i]])%*%P(n[i]))
@@ -282,7 +315,7 @@ hrm.AB <- function(n, a, d, X, alpha){
   f0_2 <- 0
   
   for(i in 1:a){
-    f0_2 <- f0_2 + (1/n[i]*(1-1/a))^2*1/(n[i]-1)*.E2(n,i,V[[i]])
+    f0_2 <- f0_2 + (1/n[i]*(1-1/a))^2*1/(n[i]-1)*.E2(n,i,V[[i]],nonparametric,Q)
   }
   
   f0<-f0_1/f0_2
@@ -324,7 +357,7 @@ hrm.AB <- function(n, a, d, X, alpha){
 #' @param alpha alpha level used for the test
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.A_B <- function(n, a, d, X, alpha){
+hrm.A_B <- function(n, a, d, X, alpha, nonparametric = FALSE){
   
   stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=2, a>=2)
   stopifnot(a == length(X))
@@ -342,13 +375,24 @@ hrm.A_B <- function(n, a, d, X, alpha){
   
   K_A_B <- kronecker(P(a),I(d))
   
+  ##########################
+  ### U statistics
+  #########################
+  
+  Q = data.frame(Q1 = rep(0,a), Q2 = rep(0,a))
+  if(nonparametric){
+    for(i in 1:a){
+      Q[i,] <- calcU(X,n,i,I(d))
+    }    
+  }
+  
   #################################################################################################
   # f
   f_1 <- 0
   f_2 <- 0
   
   for(i in 1:a){
-    f_1 <- f_1 + (1/n[i]*(1-1/a))^2*.E1(n,i,V[[i]])
+    f_1 <- f_1 + (1/n[i]*(1-1/a))^2*.E1(n,i,V[[i]],nonparametric,Q)
     j<-i+1
     while(j<=a){
       f_1 <- f_1 + 2*(1/n[i]*(1-1/a))*(1/n[j]*(1-1/a))*.E3(V[[i]],V[[j]])
@@ -357,7 +401,7 @@ hrm.A_B <- function(n, a, d, X, alpha){
   }
   
   for(i in 1:a){
-    f_2 <- f_2 + (1/n[i]*(1-1/a))^2*.E2(n,i,V[[i]])
+    f_2 <- f_2 + (1/n[i]*(1-1/a))^2*.E2(n,i,V[[i]],nonparametric,Q)
     j<-i+1
     while(j<=a){
       f_2 <- f_2 + 2/(n[i]*n[j]*a^2)*.E4(1/(n[i]-1)*P(n[i])%*%X[[i]],1/(n[j]-1)*t(X[[j]])%*%P(n[j])%*%X[[j]]%*%t(X[[i]])%*%P(n[i]))
@@ -379,7 +423,7 @@ hrm.A_B <- function(n, a, d, X, alpha){
   
   
   for(i in 1:a){
-    f0_2 <- f0_2 + (1/n[i]*(1-1/a))^2*1/(n[i]-1)*.E2(n,i,V[[i]])
+    f0_2 <- f0_2 + (1/n[i]*(1-1/a))^2*1/(n[i]-1)*.E2(n,i,V[[i]],nonparametric,Q)
   }
   
   f0<-f0_1/f0_2
@@ -418,7 +462,7 @@ hrm.A_B <- function(n, a, d, X, alpha){
 #' @param alpha alpha level used for the test
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.A.unweighted <- function(n, a, d, X, alpha){
+hrm.A.unweighted <- function(n, a, d, X, alpha, nonparametric = FALSE){
   
   stopifnot(is.list(X), all(is.finite(n)), alpha<=1, alpha>=0, d>=1, a>=2)
   stopifnot(a == length(X))
@@ -434,7 +478,18 @@ hrm.A.unweighted <- function(n, a, d, X, alpha){
   # creating dual empirical covariance matrices, where observations are transformed by a matrix B
   V <- lapply(X, DualEmpirical, B = J)
   
-  K_A <- kronecker(P(a),J(d))
+  K_A <- kronecker(P(a),1/d*J(d))
+  
+  ##########################
+  ### U statistics
+  #########################
+  
+  Q = data.frame(Q1 = rep(0,a), Q2 = rep(0,a))
+  if(nonparametric){
+    for(i in 1:a){
+      Q[i,] <- calcU(X,n,i,J(d))
+    }    
+  }
   
   
   #################################################################################################
@@ -445,7 +500,7 @@ hrm.A.unweighted <- function(n, a, d, X, alpha){
   
   
   for(i in 1:a){
-    f_1 <- f_1 + ((1-1/a)/(d*n[i]))^2*.E1(n,i,V[[i]])
+    f_1 <- f_1 + ((1-1/a)/(d*n[i]))^2*.E1(n,i,V[[i]],nonparametric,Q)
     j<-i+1
     while(j<=a){
       f_1 <- f_1 + 2*((1-1/a)/(d*n[i]))*((1-1/a)/(d*n[j]))*.E3(V[[i]],V[[j]])
@@ -453,7 +508,7 @@ hrm.A.unweighted <- function(n, a, d, X, alpha){
     }
   }
   for(i in 1:a){
-    f_2 <- f_2 + ((1-1/a)/(d*n[i]))^2*.E2(n,i,V[[i]])
+    f_2 <- f_2 + ((1-1/a)/(d*n[i]))^2*.E2(n,i,V[[i]],nonparametric,Q)
     j<-i+1
     while(j<=a){
       f_2 <- f_2 + 2*(1/(a^2*n[i]*n[j]*d^2))*.E4(1/(n[i]-1)*P(n[i])%*%X[[i]],1/(n[j]-1)*J(d)%*%t(X[[j]])%*%P(n[j])%*%X[[j]]%*%J(d)%*%t(X[[i]])%*%P(n[i]))
@@ -473,7 +528,7 @@ hrm.A.unweighted <- function(n, a, d, X, alpha){
   f0_2 <- 0
   
   for(i in 1:a){
-    f0_2 <- f0_2 + ((1-1/a)/(d*n[i]))^2*1/(n[i]-1)*.E2(n,i,V[[i]])
+    f0_2 <- f0_2 + ((1-1/a)/(d*n[i]))^2*1/(n[i]-1)*.E2(n,i,V[[i]],nonparametric,Q)
   }
   
   f0<-f0_1/f0_2

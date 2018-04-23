@@ -10,7 +10,8 @@ hrm_test(data, ...)
 
 \method{hrm_test}{list}(data, alpha = 0.05, ...)
 
-\method{hrm_test}{data.frame}(data, formula, alpha = 0.05, subject, ...)
+\method{hrm_test}{data.frame}(data, formula, alpha = 0.05, subject,
+  nonparametric = FALSE, ...)
 }
 \arguments{
 \item{data}{Either a data.frame (one observation per row) or a list with matrices (one subject per row) for all groups containing the data}
@@ -22,6 +23,8 @@ hrm_test(data, ...)
 \item{formula}{A model formula object. The left hand side contains the response variable and the right hand side contains the whole- and subplot factors.}
 
 \item{subject}{column name within the data frame X identifying the subjects}
+
+\item{nonparametric}{Logical variable indicating wether the noparametric version of the test statistic should be used}
 }
 \value{
 Returns an object from class HRM containing
