@@ -20,12 +20,13 @@
 hrm.test.3.three <- function(X, alpha , factor1, factor2, factor3, subject, data, formula, testing = rep(1,7), nonparametric ){
   
   ranked <- NULL
+  varQGlobal <- NULL
   
   # create list for storing results; NULL used, because it is ignored by rbind
   temp <- list(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)
   for(i in 1:7){
     if(testing[i]) {
-      temp[[i]] <-  hrm.0w.3s(X, alpha , factor1,  factor2, factor3, subject, data, i, "", nonparametric, ranked)
+      temp[[i]] <-  hrm.0w.3s(X, alpha , factor1,  factor2, factor3, subject, data, i, "", nonparametric, ranked, varQGlobal)
     }
   }
   
@@ -37,6 +38,7 @@ hrm.test.3.three <- function(X, alpha , factor1, factor2, factor3, subject, data
   output$subject <- subject
   output$factors <- list(c("none"), c(factor1, factor2, factor3))
   output$data <- X
+  output$var <- varQGlobal
   output$nonparametric <- nonparametric
   class(output) <- "HRM"
   
@@ -57,7 +59,7 @@ hrm.test.3.three <- function(X, alpha , factor1, factor2, factor3, subject, data
 #' @param text a string, which will be printed in the output
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.0w.3s <- function(X, alpha , factor1, factor2, factor3, subject, data, H = 1, text ="", nonparametric, ranked ){
+hrm.0w.3s <- function(X, alpha , factor1, factor2, factor3, subject, data, H = 1, text ="", nonparametric, ranked, varQGlobal ){
   
   stopifnot(is.data.frame(X),is.character(subject), is.character(factor1), is.character(factor2), alpha<=1, alpha>=0, is.logical(nonparametric))
   f <- 0
@@ -79,8 +81,8 @@ hrm.0w.3s <- function(X, alpha , factor1, factor2, factor3, subject, data, H = 1
   c2 <- nlevels(X[,factor3])
   n <- dim(X)[1]
   
-  if(nonparametric & is.null(ranked)){ 
-    X[,data := (rank(X[,data], ties.method = "average")-1/2)*1/(n[1]*a*d*c*c2)]
+  if(nonparametric & is.null(ranked)) {
+    X[,data:= 1/(sum(n)*d*c*c2)*(rank(X[,data], ties.method = "average") - 1/2)]
   }
   
   for(i in 1:a){
@@ -201,6 +203,8 @@ hrm.0w.3s <- function(X, alpha , factor1, factor2, factor3, subject, data, H = 1
   # Test
   
   direct <- 1/n[1]*var(X)
+  eval.parent(substitute(varQGlobal <- direct))
+  
   test <- (t(X_bar)%*%K_B%*%X_bar)/(t(rep(1,dim(K_B)[1]))%*%(K_B*direct)%*%(rep(1,dim(K_B)[1])))
   p.value <- 1-pf(test,f,f0)
   output <- data.frame(hypothesis=text,df1=f,df2=f0, crit=crit, test=test, p.value=p.value, sign.code=.hrm.sigcode(p.value))

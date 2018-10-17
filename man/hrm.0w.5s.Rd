@@ -4,8 +4,8 @@
 \alias{hrm.0w.5s}
 \title{Test for interaction of four subplot factors}
 \usage{
-hrm.0w.5s(X, alpha, factor1, factor2, factor3, factor4, factor5, subject, data,
-  H = 1, text = "", nonparametric, ranked)
+hrm.0w.5s(X, alpha, factor1, factor2, factor3, factor4, factor5, subject,
+  data, H = 1, text = "", nonparametric, ranked, varQGlobal)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

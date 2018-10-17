@@ -11,7 +11,7 @@ hrm_test(data, ...)
 \method{hrm_test}{list}(data, alpha = 0.05, ...)
 
 \method{hrm_test}{data.frame}(data, formula, alpha = 0.05, subject,
-  nonparametric = FALSE, ...)
+  nonparametric = FALSE, character.only = FALSE, ...)
 }
 \arguments{
 \item{data}{Either a data.frame (one observation per row) or a list with matrices (one subject per row) for all groups containing the data}
@@ -25,6 +25,8 @@ hrm_test(data, ...)
 \item{subject}{column name within the data frame X identifying the subjects}
 
 \item{nonparametric}{Logical variable indicating wether the noparametric version of the test statistic should be used}
+
+\item{character.only}{a logical indicating whether subject can be assumed to be a character string}
 }
 \value{
 Returns an object from class HRM containing

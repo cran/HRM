@@ -5,9 +5,8 @@
 ###
 ###
 ####################################################################################################################################
-# library(RGtk2)
-# result <- data.frame(a=1:2, b=1:2, c=1:2, d=1:2, e=1:2, f=1:2)
-# gui.results(result, ".", ",")
+
+
 #' Function for displaying and saving the results of the function 'hrm_test' within the function 'hrm.GUI'
 #' 
 #' @param result data.frame from the ouput of the function hrm_test

@@ -4,7 +4,8 @@
 \alias{hrm.1w.0f}
 \title{Test for interaction of factor A and B}
 \usage{
-hrm.1w.0f(X, alpha, group, subject, data, H, text, nonparametric, ranked)
+hrm.1w.0f(X, alpha, group, subject, data, H, text, nonparametric, ranked,
+  varQGlobal)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

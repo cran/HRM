@@ -4,8 +4,8 @@
 \alias{hrm.test.4.four}
 \title{Test for two subplot factors}
 \usage{
-hrm.test.4.four(X, alpha, factor1, factor2, factor3, factor4, subject, data,
-  formula, testing = rep(1, 2^4 - 1), nonparametric)
+hrm.test.4.four(X, alpha, factor1, factor2, factor3, factor4, subject,
+  data, formula, testing = rep(1, 2^4 - 1), nonparametric)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

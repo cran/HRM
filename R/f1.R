@@ -19,10 +19,11 @@
 hrm.test.2.two <- function(X, alpha , factor1, factor2, subject, data, formula, testing = rep(1,3), nonparametric ){
   
   ranked <- NULL
+  varQGlobal <- NULL
   
-  temp0 <- if(testing[1]) { hrm.0w.2s(X, alpha , factor1,  factor2, subject, data, "B", paste(as.character(factor1)),nonparametric, ranked) }
-  temp1 <- if(testing[2]) { hrm.0w.2s(X, alpha , factor1,  factor2, subject, data, "C", paste(as.character(factor2)),nonparametric, ranked) }
-  temp2 <- if(testing[3]) { hrm.0w.2s(X, alpha , factor1,  factor2, subject, data, "BC", paste(as.character(factor1), ":", as.character(factor2) ),nonparametric, ranked) }
+  temp0 <- if(testing[1]) { hrm.0w.2s(X, alpha , factor1,  factor2, subject, data, "B", paste(as.character(factor1)),nonparametric, ranked, varQGlobal) }
+  temp1 <- if(testing[2]) { hrm.0w.2s(X, alpha , factor1,  factor2, subject, data, "C", paste(as.character(factor2)),nonparametric, ranked, varQGlobal) }
+  temp2 <- if(testing[3]) { hrm.0w.2s(X, alpha , factor1,  factor2, subject, data, "BC", paste(as.character(factor1), ":", as.character(factor2) ),nonparametric, ranked, varQGlobal) }
   
   output <- list()
   output$result <- rbind(temp0,temp1,temp2)
@@ -31,6 +32,7 @@ hrm.test.2.two <- function(X, alpha , factor1, factor2, subject, data, formula, 
   output$subject <- subject
   output$factors <- list(c("none"), c(factor1, factor2))
   output$data <- X
+  output$var <- varQGlobal
   output$nonparametric <- nonparametric
   class(output) <- "HRM"
   
@@ -50,8 +52,11 @@ hrm.test.2.two <- function(X, alpha , factor1, factor2, subject, data, formula, 
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
 hrm.test.1.one <- function(X, alpha , factor1, subject, data, formula, nonparametric ){
-
-  temp0 <- hrm.1f(X, alpha , factor1,  subject, data, "B", paste(as.character(factor1)), nonparametric)
+  
+  ranked <- NULL
+  varQGlobal <- NULL
+  
+  temp0 <- hrm.1f(X, alpha , factor1,  subject, data, "B", paste(as.character(factor1)), nonparametric, ranked, varQGlobal)
 
   output <- list()
   output$result <- rbind(temp0)
@@ -60,6 +65,7 @@ hrm.test.1.one <- function(X, alpha , factor1, subject, data, formula, nonparame
   output$subject <- subject
   output$factors <- list(c("none"), c(factor1))
   output$data <- X
+  output$var <- varQGlobal
   output$nonparametric <- nonparametric
   class(output) <- "HRM"
   
@@ -79,7 +85,7 @@ hrm.test.1.one <- function(X, alpha , factor1, subject, data, formula, nonparame
 #' @param text a string, which will be printed in the output
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.1f <- function(X, alpha , factor1, subject, data, H = "B", text ="" , nonparametric){
+hrm.1f <- function(X, alpha , factor1, subject, data, H = "B", text ="" , nonparametric, ranked, varQGlobal){
   
   stopifnot(is.data.frame(X),is.character(subject), is.character(factor1), alpha<=1, alpha>=0, is.logical(nonparametric))
   f <- 0
@@ -188,6 +194,8 @@ hrm.1f <- function(X, alpha , factor1, subject, data, H = "B", text ="" , nonpar
   # Test
 
   direct <- 1/n[1]*var(X)
+  eval.parent(substitute(varQGlobal <- direct))
+  
   test <- (t(X_bar)%*%K_B%*%X_bar)/(t(rep(1,dim(K_B)[1]))%*%(K_B*direct)%*%(rep(1,dim(K_B)[1])))
   p.value <- 1-pf(test,f,f0)
   output <- data.frame(hypothesis=text,df1=f,df2=f0, crit=crit, test=test, p.value=p.value, sign.code=.hrm.sigcode(p.value))
@@ -211,7 +219,7 @@ hrm.1f <- function(X, alpha , factor1, subject, data, H = "B", text ="" , nonpar
 #' @param text a string, which will be printed in the output
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.0w.2s <- function(X, alpha , factor1, factor2, subject, data, H = "B", text ="", nonparametric, ranked ){
+hrm.0w.2s <- function(X, alpha , factor1, factor2, subject, data, H = "B", text ="", nonparametric, ranked, varQGlobal ){
   
   stopifnot(is.data.frame(X),is.character(subject), is.character(factor1), is.character(factor2), alpha<=1, alpha>=0)
   f <- 0
@@ -332,6 +340,8 @@ hrm.0w.2s <- function(X, alpha , factor1, factor2, subject, data, H = "B", text 
   # Test
   
   direct <- 1/n[1]*var(X)
+  eval.parent(substitute(varQGlobal <- direct))
+  
   test <- (t(X_bar)%*%K_B%*%X_bar)/(t(rep(1,dim(K_B)[1]))%*%(K_B*direct)%*%(rep(1,dim(K_B)[1])))
   p.value <- 1-pf(test,f,f0)
   output <- data.frame(hypothesis=text,df1=f,df2=f0, crit=crit, test=test, p.value=p.value, sign.code=.hrm.sigcode(p.value))

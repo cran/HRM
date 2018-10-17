@@ -5,7 +5,7 @@
 \title{Test for interaction of factor A and B}
 \usage{
 hrm.1w.2f(X, alpha, group, factor1, factor2, subject, data, H, text = "",
-  nonparametric, ranked)
+  nonparametric, ranked, varQGlobal)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

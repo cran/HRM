@@ -5,7 +5,7 @@
 \title{Test for influence of factor A}
 \usage{
 hrm.2w.2f(X, alpha, group, subgroup, factor1, factor2, subject, data, H,
-  text = "", nonparametric, ranked)
+  text = "", nonparametric, ranked, varQGlobal)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

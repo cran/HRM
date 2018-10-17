@@ -4,8 +4,8 @@
 \alias{hrm.test.3.between}
 \title{Test for no main effects and interaction effects of two crossed between-subject factors and one within-subject factor}
 \usage{
-hrm.test.3.between(X, alpha, group, factor1, factor2, factor3, subject, data,
-  testing = rep(1, 15), formula, nonparametric)
+hrm.test.3.between(X, alpha, group, factor1, factor2, factor3, subject,
+  data, testing = rep(1, 15), formula, nonparametric)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

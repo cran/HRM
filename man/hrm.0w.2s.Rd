@@ -4,8 +4,8 @@
 \alias{hrm.0w.2s}
 \title{Test for interaction of factor A and B}
 \usage{
-hrm.0w.2s(X, alpha, factor1, factor2, subject, data, H = "B", text = "",
-  nonparametric, ranked)
+hrm.0w.2s(X, alpha, factor1, factor2, subject, data, H = "B",
+  text = "", nonparametric, ranked, varQGlobal)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

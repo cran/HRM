@@ -21,7 +21,7 @@
 #' @example R/example_plot.txt
 #' @keywords internal
 hrm.plot <- function(data, group , factor1, subject, response, xlab="time", ylab="mean", legend = TRUE, legend.title = NULL ){
-  X<-data
+  X <- as.data.frame(data)
   data<-response
   stopifnot(is.data.frame(X),is.character(subject), is.character(group),is.character(factor1),is.character(data),is.character(xlab),is.character(ylab))
   f <- 0
