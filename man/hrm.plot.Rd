@@ -4,8 +4,17 @@
 \alias{hrm.plot}
 \title{Plots profiles of the groups in case of one whole- and one subplot-factor.}
 \usage{
-hrm.plot(data, group, factor1, subject, response, xlab = "time",
-  ylab = "mean", legend = TRUE, legend.title = NULL)
+hrm.plot(
+  data,
+  group,
+  factor1,
+  subject,
+  response,
+  xlab = "time",
+  ylab = "mean",
+  legend = TRUE,
+  legend.title = NULL
+)
 }
 \arguments{
 \item{data}{A data.frame containing the data}

@@ -19,7 +19,7 @@
 #' @param text a string, which will be printed in the output
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.2w.2f <- function(X, alpha, group , subgroup, factor1, factor2, subject, data, H, text = "", nonparametric, ranked, varQGlobal ){
+hrm.2w.2f <- function(X, alpha, group , subgroup, factor1, factor2, subject, data, H, text = "", nonparametric, ranked, varQGlobal, np.correction ){
 
   stopifnot(is.data.frame(X),is.character(subject), is.character(data),is.character(group),is.character(subgroup),is.character(factor1),is.character(factor2),  alpha<=1, alpha>=0, is.logical(nonparametric))
   f <- 0
@@ -75,6 +75,7 @@ hrm.2w.2f <- function(X, alpha, group , subgroup, factor1, factor2, subject, dat
   X_bar <- as.matrix(vec(sapply(X, colMeans, na.rm=TRUE)))
 
 
+  kdim <- 1
   # defining the hypothesis matrices
   if(H==1){ # A
     K <- kronecker(1/d*J(d), 1/c*J(c))
@@ -88,10 +89,12 @@ hrm.2w.2f <- function(X, alpha, group , subgroup, factor1, factor2, subject, dat
     K <- kronecker(P(d), 1/c*J(c))
     S <- kronecker(1/ag*J(ag), 1/asub*J(asub))
     text <- paste(as.character(factor1))
+    kdim <- d
   } else if(H==4){ # C
     K <- kronecker(1/d*J(d), P(c))
     S <- kronecker(1/ag*J(ag), 1/asub*J(asub))
     text <- paste(as.character(factor2))
+    kdim <- c
   } else if(H==5){ # AA2
     K <- kronecker(1/d*J(d), 1/c*J(c))
     S <- kronecker(P(ag), P(asub))
@@ -100,52 +103,132 @@ hrm.2w.2f <- function(X, alpha, group , subgroup, factor1, factor2, subject, dat
     K <- kronecker(P(d), 1/c*J(c))
     S <- kronecker(P(ag), 1/asub*J(asub))
     text <- paste(as.character(group),":",as.character(factor1))
+    kdim <- d
   } else if(H==7){ # AC
     K <- kronecker(1/d*J(d), P(c))
     S <- kronecker(P(ag), 1/asub*J(asub))
     text <- paste(as.character(group),":",as.character(factor2))
+    kdim <- c
   } else if(H==8){ # A2B
     K <- kronecker(P(d), 1/c*J(c))
     S <- kronecker(1/ag*J(ag), P(asub))
     text <- paste(as.character(subgroup),":",as.character(factor1))
+    kdim <- d
   } else if(H==9){ # A2C
     K <- kronecker(1/d*J(d), P(c))
     S <- kronecker(1/ag*J(ag), P(asub))
     text <- paste(as.character(subgroup),":",as.character(factor2))
+    kdim <- c
   } else if(H==10){ # BC
     K <- kronecker(P(d), P(c))
     S <- kronecker(1/ag*J(ag), 1/asub*J(asub))
     text <- paste(as.character(factor1),":",as.character(factor2))
+    kdim <- d*c
   } else if(H==11){ # AA2B
     K <- kronecker(P(d), 1/c*J(c))
     S <- kronecker(P(ag), P(asub))
     text <- paste(as.character(group),":",as.character(subgroup),":",as.character(factor1))
+    kdim <- d
   } else if(H==12){ # AA2C
     K <- kronecker(1/d*J(d), P(c))
     S <- kronecker(P(ag), P(asub))
     text <- paste(as.character(group),":",as.character(subgroup),":",as.character(factor2))
+    kdim <- c
   } else if(H==13){ # ABC
     K <- kronecker(P(d), P(c))
     S <- kronecker(P(ag), 1/asub*J(asub))
     text <- paste(as.character(group),":",as.character(factor1),":",as.character(factor2))
+    kdim <- d*c
   } else if(H==14){ # A2BC
     K <- kronecker(P(d), P(c))
     S <- kronecker(1/ag*J(ag), P(asub))
     text <- paste(as.character(subgroup),":",as.character(factor1),":",as.character(factor2))
+    kdim <- d*c
   } else if(H==15){ # AA2BC
     K <- kronecker(P(d), P(c))
     S <- kronecker(P(ag), P(asub))
     text <- paste(as.character(group),":",as.character(subgroup),":",as.character(factor1),":",as.character(factor2))
+    kdim <- d*c
   }
 
   # creating dual empirical covariance matrices
   K_Hypothesis <- kronecker(S, K)
   V <- lapply(X, DualEmpirical2, B=K)
 
-  Q = data.frame(Q1 = rep(0,a), Q2 = rep(0,a))
+  Q <- data.frame(Q1 = rep(0,a), Q2 = rep(0,a))
   if(nonparametric){
     for(i in 1:a){
       Q[i,] <- calcU(X,n,i,K)
+    }
+  }
+
+  eval.parent(substitute(correction <- np.correction))
+
+  if(is.na(np.correction)) {
+    eval.parent(substitute(correction <- (d*c >= max(n))))
+    np.correction <- (kdim >= max(n))
+  }
+
+  if(np.correction & nonparametric) {
+    if(H %in% c(3,4,6:15)) {
+      for(gg in 1:a) {
+
+        tmp <- X[[gg]]%*%K
+        nr <- dim(tmp)[1]
+        p <- dim(tmp)[2]
+        if(nr%%2 == 1){
+          nr <- nr - 1
+        }
+        mm <- colMeans(tmp)
+        g <- rep(0,nr)
+        g2 <- vector("list", length = nr)
+        t2 <- matrix(rep(0,p^2), ncol = p)
+        for(i in 1:nr) {
+          g[i] <- t(tmp[i,] - mm) %*% (tmp[i,] - mm)
+          g2[[i]] <- (tmp[i,] - mm) %*% t(tmp[i,] - mm)
+          t2 <- t2 + g2[[i]]
+        }
+
+        reps <- min(150, choose(nr,nr/2))
+        covs <- rep(0,reps)
+        g1 <- rep(0, nr/2)
+        g12 <- rep(0, nr/2)
+
+        for(i in 1:reps) {
+          grp <- sample(c(rep(1,nr/2), rep(2,nr/2)))
+          g1 <- g[grp == 1]
+          g12 <- g[grp == 2]
+          covs[i] <- cov(g1,g12)
+        }
+
+        t4 <- rep(0, nr*(nr - 1)/2)
+        k <- 1
+        for(i in 1:nr) {
+          j <- i + 1
+          while(j <= nr) {
+            t4[k] <- matrix.trace(g2[[i]]%*%g2[[j]])
+            k <- k + 1
+            j <- j + 1
+          }
+        }
+
+        corr <- mean(covs)
+        corr2 <- mean(t4) - matrix.trace((1/nr*t2)*(1/nr*t2))
+
+        tmpQ1 <-  Q[gg,1] - corr*(n[gg]^2*1/(n[gg]^2 - n[gg]))^2
+        tmpQ2 <- Q[gg,2] - corr2*(n[gg]^2*1/(n[gg]^2 - n[gg]))^2
+        eval.parent(substitute(tmpQ1g <- tmpQ1))
+        eval.parent(substitute(tmpQ2g <- tmpQ2))
+
+
+        if(tmpQ1 > 0) {
+          Q[gg,1] <- tmpQ1
+        }
+        if(tmpQ2 > 0) {
+          Q[gg,2] <- tmpQ2
+        }
+
+      }
     }
   }
 
@@ -210,7 +293,9 @@ hrm.2w.2f <- function(X, alpha, group , subgroup, factor1, factor2, subject, dat
   test <- (t(X_bar)%*%K_Hypothesis%*%X_bar)/(t(rep(1,dim(K_Hypothesis)[1]))%*%(K_Hypothesis*direct)%*%(rep(1,dim(K_Hypothesis)[1])))
   p.value <- 1-pf(test,f,f0)
   output <- data.frame(hypothesis=text,df1=f,df2=f0, crit=crit, test=test, p.value=p.value, sign.code=.hrm.sigcode(p.value))
-
+  if(nonparametric) {
+    output$np.correction <- np.correction
+  }
 
   return (output)
 }

@@ -8,8 +8,17 @@
 \usage{
 hrm.test.matrix(data, alpha = 0.05)
 
-hrm.test.dataframe(data, alpha = 0.05, group, subgroup, factor1, factor2,
-  factor3, subject, response)
+hrm.test.dataframe(
+  data,
+  alpha = 0.05,
+  group,
+  subgroup,
+  factor1,
+  factor2,
+  factor3,
+  subject,
+  response
+)
 }
 \description{
 The functions listed below are deprecated and will be defunct in

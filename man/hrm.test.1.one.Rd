@@ -4,7 +4,16 @@
 \alias{hrm.test.1.one}
 \title{Test for one subplot factor}
 \usage{
-hrm.test.1.one(X, alpha, factor1, subject, data, formula, nonparametric)
+hrm.test.1.one(
+  X,
+  alpha,
+  factor1,
+  subject,
+  data,
+  formula,
+  nonparametric,
+  np.correction
+)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

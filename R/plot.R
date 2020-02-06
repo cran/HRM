@@ -1,13 +1,13 @@
 ####################################################################################################################################
 ### Filename:    plot.R
 ### Description: Function for plotting the profiles only when one whole- and one subplot factor are used.
-### 
+###
 ###
 ###
 ####################################################################################################################################
 
 #' Plots profiles of the groups in case of one whole- and one subplot-factor.
-#' 
+#'
 #' @param data A data.frame containing the data
 #' @param group column name within the data frame data specifying the groups
 #' @param factor1 column name within the data frame data specifying the first subplot-factor
@@ -27,8 +27,8 @@ hrm.plot <- function(data, group , factor1, subject, response, xlab="time", ylab
   f <- 0
   f0 <- 0
   crit <- 0
-  test <- 0  
-  
+  test <- 0
+
   group <- as.character(group)
   factor1 <- as.character(factor1)
   subject <- as.character(subject)
@@ -37,12 +37,12 @@ hrm.plot <- function(data, group , factor1, subject, response, xlab="time", ylab
   X <- split(X, X[,group], drop=TRUE)
   a <- length(X)
   d <- nlevels(X[[1]][,factor1])
-  n <- rep(0,a) 
-  
-  means <- data.frame(dimension=1:d)
+  n <- rep(0,a)
+
+  means <- data.frame(dimension=as.numeric(levels(X[[1]][,factor1])))
   groupnames <- c()
-  
-  
+
+
   for(i in 1:a){
     groupnames[i] <- as.character(X[[i]][1,group])
     X[[i]] <- X[[i]][ order(X[[i]][,subject], X[[i]][,factor1]), ]
@@ -51,7 +51,7 @@ hrm.plot <- function(data, group , factor1, subject, response, xlab="time", ylab
     n[i] <- dim(X[[i]])[1]
     means[,(i+1)] <- colMeans(X[[i]])
   }
-  
+
   colnames(means) <- c("dimension",groupnames)
 
   means <- melt(means, id.vars="dimension")
@@ -62,18 +62,18 @@ hrm.plot <- function(data, group , factor1, subject, response, xlab="time", ylab
         geom_point(data=means, aes(x=means$dimension, y=means$value,group=means$group,colour=means$group),size=1.5) +
         xlab(xlab) +
         ylab(ylab)
-  
+
   if(!legend){
-    pl <- pl + theme(legend.position = "none") 
+    pl <- pl + theme(legend.position = "none")
   } else {
     if(!is.null(legend.title) & is.character(legend.title)){
       pl <- pl + scale_colour_hue(name=legend.title)
     } else {
       pl <- pl + theme(legend.title = element_blank())
     }
-    pl <- pl + theme(legend.background = element_rect()) 
+    pl <- pl + theme(legend.background = element_rect())
   }
-  
+
   return(pl)
 
 }

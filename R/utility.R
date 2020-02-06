@@ -70,10 +70,10 @@ calcU_onegroup <- function(X, n, K){
 .hrm.sigcode <- function(value) {
 
   char <- ""
-  if(value <= 0.1 & value > 0.05) { char = "."}
-  if(value <= 0.05 & value > 0.01) {char = '*'}
-  if(value <= 0.01 & value > 0.001) {char = "**"}
-  if(value <= 0.001 & value >= 0) {char = "***"}
+  if(value <= 0.1 & value > 0.05) { char <- "."}
+  if(value <= 0.05 & value > 0.01) {char <- '*'}
+  if(value <= 0.01 & value > 0.001) {char <- "**"}
+  if(value <= 0.001 & value >= 0) {char <- "***"}
   return (char)
 }
 

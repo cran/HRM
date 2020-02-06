@@ -4,8 +4,21 @@
 \alias{hrm.test.5.five}
 \title{Test for two subplot factors}
 \usage{
-hrm.test.5.five(X, alpha, factor1, factor2, factor3, factor4, factor5,
-  subject, data, formula, testing = rep(1, 2^5 - 1), nonparametric)
+hrm.test.5.five(
+  X,
+  alpha,
+  factor1,
+  factor2,
+  factor3,
+  factor4,
+  factor5,
+  subject,
+  data,
+  formula,
+  testing = rep(1, 2^5 - 1),
+  nonparametric,
+  np.correction
+)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

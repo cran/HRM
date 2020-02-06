@@ -23,7 +23,7 @@
 #' @param subject column name of the data frame X identifying the subjects
 #' @return Returns a data frame consisting of the degrees of freedom, the test value, the critical value and the p-value
 #' @keywords internal
-hrm.1w.3f <- function(X, alpha, group , factor1, factor2, factor3, subject, data, S, K1, K2, K3, hypothesis, nonparametric, ranked, varQGlobal ){
+hrm.1w.3f <- function(X, alpha, group , factor1, factor2, factor3, subject, data, S, K1, K2, K3, hypothesis, nonparametric, ranked, varQGlobal, np.correction ){
   stopifnot(is.data.frame(X),is.character(subject), is.character(group),is.character(factor1),is.character(factor2), is.character(factor3),alpha<=1, alpha>=0, is.logical(nonparametric))
   f <- 0
   f0 <- 0
@@ -72,7 +72,9 @@ hrm.1w.3f <- function(X, alpha, group , factor1, factor2, factor3, subject, data
 
 
   # creating dual empirical covariance matrices
+  npcriteria <- (K1 != "P" & K2 != "P" & K3 != "P")
 
+  kdim <- 1
   if(S == "P"){
     S <- P(a)
   } else {
@@ -80,16 +82,19 @@ hrm.1w.3f <- function(X, alpha, group , factor1, factor2, factor3, subject, data
   }
   if(K1 == "P"){
     K1 <- P(d)
+    kdim <- kdim*d
   } else {
     K1 <- 1/d*J(d)
   }
   if(K2 == "P"){
     K2 <- P(c)
+    kdim <- kdim*c
   } else {
     K2 <- 1/c*J(c)
   }
   if(K3 == "P"){
     K3 <- P(c2)
+    kdim <- kdim*c2
   } else {
     K3 <- 1/c2*J(c2)
   }
@@ -98,10 +103,84 @@ hrm.1w.3f <- function(X, alpha, group , factor1, factor2, factor3, subject, data
   K_phi <- kronecker(S, K)
   V <- lapply(X, DualEmpirical2, B=K)
 
-  Q = data.frame(Q1 = rep(0,a), Q2 = rep(0,a))
+  Q <- data.frame(Q1 = rep(0,a), Q2 = rep(0,a))
   if(nonparametric){
     for(i in 1:a){
       Q[i,] <- calcU(X,n,i,K)
+    }
+  }
+
+  eval.parent(substitute(correction <- np.correction))
+
+  if(is.na(np.correction)) {
+    eval.parent(substitute(correction <- (d*c*c2 >= max(n))))
+    np.correction <- (kdim >= max(n))
+  }
+
+  if(np.correction & nonparametric) {
+    if(!npcriteria) {
+      for(gg in 1:a) {
+
+          tmp <- X[[gg]]%*%K
+          nr <- dim(tmp)[1]
+          p <- dim(tmp)[2]
+          if(nr%%2 == 1){
+            nr <- nr - 1
+          }
+          mm <- colMeans(tmp)
+          g <- rep(0,nr)
+          g2 <- vector("list", length = nr)
+          t2 <- matrix(rep(0,p^2), ncol = p)
+          for(i in 1:nr) {
+            g[i] <- t(tmp[i,] - mm) %*% (tmp[i,] - mm)
+            g2[[i]] <- (tmp[i,] - mm) %*% t(tmp[i,] - mm)
+            t2 <- t2 + g2[[i]]
+          }
+
+          reps <- min(150, choose(nr,nr/2))
+          covs <- rep(0,reps)
+          g1 <- rep(0, nr/2)
+          g12 <- rep(0, nr/2)
+
+          for(i in 1:reps) {
+            grp <- sample(c(rep(1,nr/2), rep(2,nr/2)))
+            g1 <- g[grp == 1]
+            g12 <- g[grp == 2]
+            covs[i] <- cov(g1,g12)
+          }
+
+          t4 <- rep(0, nr*(nr - 1)/2)
+          k <- 1
+          #t2 <- matrix(rep(0,d^2), ncol = d)
+          for(i in 1:nr) {
+            j <- i + 1
+            while(j <= nr) {
+              t4[k] <- matrix.trace(g2[[i]]%*%g2[[j]])
+              k <- k + 1
+              j <- j + 1
+            }
+          }
+          # for(i in 1:(nr/2)) {
+          #   t2 <- t2 + g2[[i]] + g2[[(nr/2) + i]]
+          # }
+
+          corr <- mean(covs)
+          corr2 <- mean(t4) - matrix.trace((1/nr*t2)*(1/nr*t2))
+
+          tmpQ1 <-  Q[gg,1] - corr*(n[gg]^2*1/(n[gg]^2 - n[gg]))^2
+          tmpQ2 <- Q[gg,2] - corr2*(n[gg]^2*1/(n[gg]^2 - n[gg]))^2
+          eval.parent(substitute(tmpQ1g <- tmpQ1))
+          eval.parent(substitute(tmpQ2g <- tmpQ2))
+
+
+        if(tmpQ1 > 0) {
+          Q[gg,1] <- tmpQ1
+        }
+        if(tmpQ2 > 0) {
+          Q[gg,2] <- tmpQ2
+        }
+
+      }
     }
   }
 
@@ -166,7 +245,9 @@ hrm.1w.3f <- function(X, alpha, group , factor1, factor2, factor3, subject, data
   test <- (t(X_bar)%*%K_phi%*%X_bar)/(t(rep(1,dim(K_phi)[1]))%*%(K_phi*direct)%*%(rep(1,dim(K_phi)[1])))
   p.value<-1-pf(test,f,f0)
   output <- data.frame(hypothesis=hypothesis,df1=f,df2=f0, crit=crit, test=test, p.value=p.value, sign.code=.hrm.sigcode(p.value))
-
+  if(nonparametric) {
+    output$np.correction <- np.correction
+  }
 
   return (output)
 }

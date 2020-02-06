@@ -1,4 +1,4 @@
-# HRM 1.0.2
+# HRM 1.2.0
 
 [![CRANstatus](https://www.r-pkg.org/badges/version/HRM)](https://cran.r-project.org/package=HRM)
 [![](https://cranlogs.r-pkg.org/badges/HRM)](https://cran.r-project.org/package=HRM)
@@ -65,6 +65,14 @@ confint(z, level = 0.99)
 
 ```
 
+In the data there are 4 variables with each 10 regions. We can use a multivariate approach as the variables are on different scales. For that, we can use the function 'hrm_test' with the argument 'variable' set to the column name which contains the factor variable for the variables.
+
+``` r
+# using the EEG dataset
+hrm_test(value ~ group*region, subject = subject, variable = variable, data = EEG)
+```
+
+
 Additionally, the package can be used with a GUI.
 ``` r
 hrm_GUI()
@@ -73,7 +81,6 @@ hrm_GUI()
 ## References
 
 [1] Happ, M., Harrar, S. W., and Bathke, A. C. (2018). HRM: An R Package for Analysing High-dimensional Multi-factor Repeated Measures. The R Journal 10(1), 534--548. <a href="https://journal.r-project.org/archive/2018/RJ-2018-032/index.html">https://journal.r-project.org/archive/2018/RJ-2018-032/index.html</a>
-
 
 [2] Happ, M., Harrar S. W. and Bathke, A. C. (2017). High-dimensional Repeated
   Measures. Journal of Statistical Theory and Practice. 11(3), 468-477. URL:

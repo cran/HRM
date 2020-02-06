@@ -4,8 +4,18 @@
 \alias{hrm.test.2.two}
 \title{Test for two subplot factors}
 \usage{
-hrm.test.2.two(X, alpha, factor1, factor2, subject, data, formula,
-  testing = rep(1, 3), nonparametric)
+hrm.test.2.two(
+  X,
+  alpha,
+  factor1,
+  factor2,
+  subject,
+  data,
+  formula,
+  testing = rep(1, 3),
+  nonparametric,
+  np.correction
+)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

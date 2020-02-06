@@ -10,8 +10,17 @@ hrm_test(data, ...)
 
 \method{hrm_test}{list}(data, alpha = 0.05, ...)
 
-\method{hrm_test}{data.frame}(data, formula, alpha = 0.05, subject,
-  nonparametric = FALSE, character.only = FALSE, ...)
+\method{hrm_test}{data.frame}(
+  data,
+  formula,
+  alpha = 0.05,
+  subject,
+  variable = NULL,
+  nonparametric = FALSE,
+  np.correction = NA,
+  character.only = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{Either a data.frame (one observation per row) or a list with matrices (one subject per row) for all groups containing the data}
@@ -24,7 +33,11 @@ hrm_test(data, ...)
 
 \item{subject}{column name within the data frame X identifying the subjects}
 
+\item{variable}{if not 'NULL' then multivariate tests are applied. We assume that for each factor level of 'variable', we observe several repated measurements. Currently only supports designs with 1 whole- and one sub-plot factor.}
+
 \item{nonparametric}{Logical variable indicating wether the noparametric version of the test statistic should be used}
+
+\item{np.correction}{Logical variable indicating wether a small sample size correction for the nonparametric test should be used (TRUE) or not (FALSE). By using NA, np.correction is used automatically in an high-dimensional setting.}
 
 \item{character.only}{a logical indicating whether subject can be assumed to be a character string}
 }
@@ -73,6 +86,10 @@ hrm_test(data=X, alpha=0.05)
 # using the EEG dataset
 ?EEG
 
+# Univariate Approach
 hrm_test(value ~ group*region*variable, subject = "subject", data = EEG)
+
+# Multivariate Approach: testing effects for each variable
+hrm_test(value~group*region, subject=subject, variable=variable, data = EEG)
 }
 \keyword{export}

@@ -4,8 +4,23 @@
 \alias{hrm.2w.1f}
 \title{Test for influence of factor A}
 \usage{
-hrm.2w.1f(X, alpha, group, subgroup, factor, subject, data, H, text = "",
-  nonparametric, ranked, varQGlobal)
+hrm.2w.1f(
+  X,
+  alpha,
+  group,
+  subgroup,
+  factor,
+  subject,
+  data,
+  H,
+  text = "",
+  nonparametric,
+  ranked,
+  varQGlobal,
+  np.correction,
+  tmpQ1g,
+  tmpQ2g
+)
 }
 \arguments{
 \item{X}{dataframe containing the data in the long table format}

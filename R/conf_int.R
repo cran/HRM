@@ -31,7 +31,8 @@ confint.HRM <- function(object, parm, level = 0.95, ...) {
       cj <- c*0
       ci[i] <- 1
       cj[j] <- 1
-      R[i, j] <- (t(ci)%*%object$var%*%cj)*1/sqrt(t(ci)%*%object$var%*%ci)*1/sqrt(t(cj)%*%object$var%*%cj)
+      R[i, j] <- (t(ci)%*%object$var%*%cj)*1/sqrt(t(ci)%*%object$var%*%ci)*
+        1/sqrt(t(cj)%*%object$var%*%cj)
     }
   }
   quantiles <- qmvnorm(level, corr = R, tail = "both")$quantile

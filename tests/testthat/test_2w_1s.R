@@ -13,9 +13,9 @@ test_that("function hrm_test", {
 })
 
 true_result <- c(2.918698, 80.753833, 2.741836, 4.054007)
-result <- as.numeric(HRM::hrm_test(value ~ group*sex*dimension, subject = "subject", data = dat, nonparametric = TRUE)$result[1, 2:5])
-result1 <- as.numeric(HRM::hrm_test(value ~ group*sex*dimension, subject = subject, data = dat, nonparametric = TRUE)$result[1, 2:5])
-result2 <- as.numeric(HRM::hrm_test(value2 ~ group*sex*dimension, subject = "subject", data = dat, nonparametric = TRUE)$result[1, 2:5])
+result <- as.numeric(HRM::hrm_test(value ~ group*sex*dimension, subject = "subject", data = dat, nonparametric = TRUE, np.correction = FALSE)$result[1, 2:5])
+result1 <- as.numeric(HRM::hrm_test(value ~ group*sex*dimension, subject = subject, data = dat, nonparametric = TRUE, np.correction = FALSE)$result[1, 2:5])
+result2 <- as.numeric(HRM::hrm_test(value2 ~ group*sex*dimension, subject = "subject", data = dat, nonparametric = TRUE, np.correction = FALSE)$result[1, 2:5])
 
 test_that("function hrm_test, nonparametric", {
   expect_equal(result, true_result, tol = 1e-4)
